@@ -69,6 +69,40 @@ body {
   outline-offset: 3px;
 }
 
+/* Glassmorphism Surface Utility */
+.glass-panel {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-elevated {
+  background: rgba(28, 35, 55, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(101, 229, 255, 0.15);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), 0 0 20px 0 rgba(101, 229, 255, 0.08);
+}
+
+/* Cinematic Atmospheric Radial Glows */
+.radial-glow-cyan {
+  background: radial-gradient(circle, rgba(101, 229, 255, 0.12) 0%, rgba(8, 10, 16, 0) 70%);
+}
+
+.radial-glow-violet {
+  background: radial-gradient(circle, rgba(129, 117, 255, 0.12) 0%, rgba(8, 10, 16, 0) 70%);
+}
+
+/* Subtle Architectural Grid */
+.architectural-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
 /* Container Utility */
 .portfolio-container {
   width: 100%;
@@ -85,3 +119,14 @@ body {
     padding-right: 2.5rem;
   }
 }
+
+/* Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

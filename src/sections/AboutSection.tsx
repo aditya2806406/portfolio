@@ -25,8 +25,8 @@ export const AboutSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl bg-[#151B2A] border border-[#2A364F] hover:border-[#65E5FF]/50 transition-colors">
-            <div className="w-10 h-10 rounded-lg bg-[#65E5FF]/10 border border-[#65E5FF]/20 flex items-center justify-center mb-4">
+          <div className="glass-panel p-6 rounded-2xl hover:border-[#65E5FF]/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="w-10 h-10 rounded-xl bg-[#65E5FF]/10 border border-[#65E5FF]/20 flex items-center justify-center mb-4">
               <Compass className="w-5 h-5 text-[#65E5FF]" />
             </div>
             <h3 className="text-lg font-bold text-[#F4F6FC] mb-2">Spatial Thinking</h3>
@@ -35,8 +35,8 @@ export const AboutSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-[#151B2A] border border-[#2A364F] hover:border-[#8175FF]/50 transition-colors">
-            <div className="w-10 h-10 rounded-lg bg-[#8175FF]/10 border border-[#8175FF]/20 flex items-center justify-center mb-4">
+          <div className="glass-panel p-6 rounded-2xl hover:border-[#8175FF]/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="w-10 h-10 rounded-xl bg-[#8175FF]/10 border border-[#8175FF]/20 flex items-center justify-center mb-4">
               <Layers className="w-5 h-5 text-[#8175FF]" />
             </div>
             <h3 className="text-lg font-bold text-[#F4F6FC] mb-2">Modern Frontend</h3>
@@ -45,8 +45,8 @@ export const AboutSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-[#151B2A] border border-[#2A364F] hover:border-[#65E5FF]/50 transition-colors">
-            <div className="w-10 h-10 rounded-lg bg-[#65E5FF]/10 border border-[#65E5FF]/20 flex items-center justify-center mb-4">
+          <div className="glass-panel p-6 rounded-2xl hover:border-[#65E5FF]/50 transition-all duration-300 hover:-translate-y-1">
+            <div className="w-10 h-10 rounded-xl bg-[#65E5FF]/10 border border-[#65E5FF]/20 flex items-center justify-center mb-4">
               <Cpu className="w-5 h-5 text-[#65E5FF]" />
             </div>
             <h3 className="text-lg font-bold text-[#F4F6FC] mb-2">Systems Engineering</h3>
