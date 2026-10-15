@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, FileText, Mail, ArrowUpRight } from 'lucide-react'
+import { X, FileText, ArrowUpRight } from 'lucide-react'
 import { Button } from './Button'
 
 interface ResumeNoticeModalProps {
@@ -35,33 +35,33 @@ export const ResumeNoticeModal: React.FC<ResumeNoticeModalProps> = ({ isOpen, on
             <h3 id="modal-title" className="text-base font-bold text-[#F4F6FC]">
               Curriculum Vitae / Resume
             </h3>
-            <span className="text-[11px] font-mono text-[#8175FF]">Document Status: In Final Review</span>
+            <span className="text-[11px] font-mono text-[#65E5FF]">Verified Document Available</span>
           </div>
         </div>
 
         <p className="text-sm text-[#A4ADBF] leading-relaxed mb-6">
-          The verified PDF curriculum vitae is currently being updated with the latest 2026 engineering projects, publications, and certifications.
+          Verified PDF curriculum vitae for Aditya Prakash (B.Tech CSE — Data Analytics, VIT-AP University) detailing academic credentials, full-stack systems, machine learning projects, and hackathon leadership.
         </p>
 
         <div className="p-3.5 rounded-xl bg-[#101522] border border-[#1E2638] text-xs text-[#A4ADBF] space-y-1 mb-6">
-          <p className="font-semibold text-[#F4F6FC]">Request directly:</p>
-          <p>You can request an expedited copy directly via email at:</p>
-          <p className="font-mono text-[#65E5FF]">contact@adityaprakash.dev</p>
+          <p className="font-semibold text-[#F4F6FC]">Direct Inquiries & Collaboration:</p>
+          <p className="font-mono text-[#65E5FF]">prakashaditya2806@gmail.com</p>
         </div>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3">
           <Button variant="ghost" size="sm" onClick={onClose}>
             Close
           </Button>
           <Button
             asAnchor
-            href="mailto:contact@adityaprakash.dev?subject=Resume%20Request%20-%20Aditya%20Prakash"
+            href="/Aditya_Prakash_Resume.pdf"
             variant="primary"
             size="sm"
             className="flex items-center gap-1.5"
+            download="Aditya_Prakash_Resume.pdf"
           >
-            <Mail className="w-4 h-4" />
-            <span>Send Email Request</span>
+            <FileText className="w-4 h-4" />
+            <span>Download Official PDF</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Button>
         </div>

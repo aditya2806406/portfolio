@@ -59,3 +59,6 @@ export interface EducationItem {
   grade?: string
   details?: string[]
 }
+
+export type { DevelopmentMilestone } from '@/data/timeline'
+

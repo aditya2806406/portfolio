@@ -44,15 +44,29 @@ export const SculpturalCenterpiece: React.FC<SculpturalCenterpieceProps> = ({ re
     }
 
     // Scroll-driven position and scale transformation:
-    // In Hero (scroll=0): center at [0, 0, 0], scale 1.05
-    // As user scrolls towards About: moves right & down [1.8, -1.2, -1], scale 0.75
-    const posX = THREE.MathUtils.lerp(0, 2.0, scroll)
-    const posY = THREE.MathUtils.lerp(0.2, -1.5, scroll)
-    const posZ = THREE.MathUtils.lerp(0, -1.2, scroll)
-    const scale = THREE.MathUtils.lerp(1.05, 0.7, scroll)
+    // Seamlessly transitions from Hero center to an illuminated right-side observatory framing in About
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024
+    const about = sceneMotionState.aboutProgress
+
+    let posX = 0
+    let posY = 0.2
+    let posZ = 0
+    let scale = 1.05
+
+    if (isMobile) {
+      posX = THREE.MathUtils.lerp(0, 0.2, scroll)
+      posY = THREE.MathUtils.lerp(0.2, -0.8 - about * 0.5, scroll)
+      posZ = THREE.MathUtils.lerp(0, -2.8, scroll)
+      scale = THREE.MathUtils.lerp(0.85, 0.52, scroll)
+    } else {
+      posX = THREE.MathUtils.lerp(0, 2.4 + about * 0.3, scroll)
+      posY = THREE.MathUtils.lerp(0.2, 0.1 - about * 0.6, scroll)
+      posZ = THREE.MathUtils.lerp(0, -0.5 - about * 0.4, scroll)
+      scale = THREE.MathUtils.lerp(1.05, 0.85, scroll)
+    }
 
     // Add pointer parallax displacement to centerpiece
-    const parallaxFactor = reducedMotion ? 0 : 0.35
+    const parallaxFactor = reducedMotion ? 0 : 0.3
     targetPos.current.set(
       posX + pointer.x * parallaxFactor,
       posY + pointer.y * parallaxFactor,
@@ -65,10 +79,10 @@ export const SculpturalCenterpiece: React.FC<SculpturalCenterpieceProps> = ({ re
       THREE.MathUtils.lerp(groupRef.current.scale.x, scale, 0.08)
     )
 
-    // Pointer-induced tilt
+    // Pointer-induced tilt and gentle architectural orientation in About
     if (!reducedMotion) {
-      targetRot.current.x = (pointer.y * -0.2) + (scroll * 0.3)
-      targetRot.current.y = (pointer.x * 0.3) + (scroll * -0.5)
+      targetRot.current.x = (pointer.y * -0.2) + (scroll * 0.25) + (about * 0.2)
+      targetRot.current.y = (pointer.x * 0.25) + (scroll * -0.4) + (about * 0.35)
       groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRot.current.x, 0.06)
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot.current.y, 0.06)
     }

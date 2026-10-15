@@ -6,6 +6,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   children: React.ReactNode
   asAnchor?: boolean
   href?: string
+  target?: string
+  rel?: string
+  download?: string
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -15,6 +18,9 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   asAnchor = false,
   href,
+  target,
+  rel,
+  download,
   ...props
 }) => {
   const baseStyles =
@@ -39,7 +45,13 @@ export const Button: React.FC<ButtonProps> = ({
 
   if (asAnchor && href) {
     return (
-      <a href={href} className={combinedClasses}>
+      <a
+        href={href}
+        target={target}
+        rel={rel}
+        download={download}
+        className={combinedClasses}
+      >
         {children}
       </a>
     )

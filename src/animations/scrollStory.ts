@@ -18,6 +18,17 @@ export function initScrollStory(): () => void {
       },
     })
 
+    // About section spatial progression across observatory perspective
+    ScrollTrigger.create({
+      trigger: '#about',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: 1.2,
+      onUpdate: (self) => {
+        sceneMotionState.aboutProgress = self.progress
+      },
+    })
+
     // Scroll progress bar indicator across the entire page
     ScrollTrigger.create({
       trigger: '#main-content',

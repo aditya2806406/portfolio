@@ -30,7 +30,7 @@ export const ContactSection: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
           <Button
             asAnchor
-            href="mailto:contact@adityaprakash.dev"
+            href="mailto:prakashaditya2806@gmail.com"
             variant="primary"
             size="lg"
             className="flex items-center gap-2"
@@ -42,7 +42,9 @@ export const ContactSection: React.FC = () => {
 
           <Button
             asAnchor
-            href="https://github.com/adityaprakash"
+            href="https://github.com/aditya2806406"
+            target="_blank"
+            rel="noreferrer"
             variant="secondary"
             size="lg"
             className="flex items-center gap-2"
@@ -53,18 +55,20 @@ export const ContactSection: React.FC = () => {
 
           <Button
             asAnchor
-            href="https://linkedin.com"
+            href="https://linkedin.com/in/aditya-prakash-67302a347"
+            target="_blank"
+            rel="noreferrer"
             variant="secondary"
             size="lg"
             className="flex items-center gap-2"
           >
             <LinkedinIcon className="w-4 h-4" />
-            <span>LinkedIn</span>
+            <span>LinkedIn Profile</span>
           </Button>
         </div>
 
         <div className="p-4 rounded-lg bg-[#151B2A] border border-[#2A364F] text-xs text-[#A4ADBF] font-mono">
-          <span>Based in India • Available for Global Remote Collaboration</span>
+          <span>Patna, Bihar, India • Vellore Institute of Technology (VIT-AP)</span>
         </div>
       </div>
     </section>

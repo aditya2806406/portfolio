@@ -2,6 +2,7 @@ export interface SceneMotionState {
   pointer: { x: number; y: number }
   targetPointer: { x: number; y: number }
   scrollProgress: number
+  aboutProgress: number
   isTouch: boolean
 }
 
@@ -9,6 +10,7 @@ export const sceneMotionState: SceneMotionState = {
   pointer: { x: 0, y: 0 },
   targetPointer: { x: 0, y: 0 },
   scrollProgress: 0,
+  aboutProgress: 0,
   isTouch: false,
 }
 
