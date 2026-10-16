@@ -50,6 +50,8 @@
     <div class="loader-caption">DEVELOPING FRAMES</div>
   </div>
 
+  <div id="cert-lightbox" class="cert-lightbox" role="dialog" aria-modal="true" aria-label="Certificate Lightbox" hidden></div>
+
   <!-- FIXED HEADER & NAVIGATION (Z20) -->
   <header class="site-header" role="banner">
     <button class="logo-btn" data-go="home" aria-label="Go to Home / The Reel" data-c="Home">AP</button>
@@ -130,35 +132,12 @@
     <!-- PAGE 3: ABOUT — DIRECTOR'S NOTES -->
     <section id="page-about" class="page" data-page="about">
       <div class="wrap">
+        <div id="about-edit-notice" class="about-edit-notice"></div>
         <div class="about-grid">
           <!-- LEFT COLUMN: PORTRAIT & CONTACT SHEET -->
           <div>
-            <div class="portrait-frame" id="portrait-frame">
-              <div class="portrait-slate-tag">TAKE 01 — SLATE</div>
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 24px; text-align: center;">
-                <span style="font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--ink);">Aditya Prakash</span>
-                <span class="sub" style="font-size: 12px; margin-top: 8px;">B.Tech CSE (Data Analytics) · VIT-AP University</span>
-              </div>
-            </div>
-
-            <div class="contact-sheet-panel">
-              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #0e2a22, #174d3b);">
-                <div style="font-size: 11px; font-weight: 800; color: var(--teal);">01</div>
-                <div style="font-family: var(--serif); font-size: 14px;">Vision AI</div>
-              </div>
-              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #2a1b0e, #4d2b17);">
-                <div style="font-size: 11px; font-weight: 800; color: var(--amber);">02</div>
-                <div style="font-family: var(--serif); font-size: 14px;">Defense</div>
-              </div>
-              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #10212e, #19374d);">
-                <div style="font-size: 11px; font-weight: 800; color: var(--teal);">03</div>
-                <div style="font-family: var(--serif); font-size: 14px;">Civic Tech</div>
-              </div>
-              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #1f122e, #3b1d52);">
-                <div style="font-size: 11px; font-weight: 800; color: var(--amber);">04</div>
-                <div style="font-family: var(--serif); font-size: 14px;">Analytics</div>
-              </div>
-            </div>
+            <div class="portrait-frame" id="portrait-frame"></div>
+            <div class="contact-sheet-panel"></div>
           </div>
 
           <!-- RIGHT COLUMN: PHILOSOPHY -->
