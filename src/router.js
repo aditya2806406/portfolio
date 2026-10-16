@@ -13,6 +13,13 @@ const SCENES = {
   journey: { kicker: 'SCENE 04', title: 'The long take' },
 };
 
+export function getCleanPageFromHash(rawHash) {
+  if (!rawHash) return 'home';
+  let cleaned = rawHash.replace(/^#\/?/, '');
+  cleaned = cleaned.split('?')[0].split('/')[0].trim().toLowerCase();
+  return ['home', 'work', 'about', 'journey'].includes(cleaned) ? cleaned : 'home';
+}
+
 export function initRouter() {
   // Bind all elements with data-go
   document.addEventListener('click', (e) => {
@@ -22,23 +29,27 @@ export function initRouter() {
     e.preventDefault();
     const targetPage = trigger.getAttribute('data-go');
     if (targetPage) {
-      const originX = (e.clientX && e.clientX > 0) ? e.clientX : window.innerWidth / 2;
-      const originY = (e.clientY && e.clientY > 0) ? e.clientY : window.innerHeight / 2;
+      let originX, originY;
+      if (e.clientX && e.clientX > 0) {
+        originX = e.clientX;
+        originY = e.clientY;
+      } else {
+        // Keyboard activation: expand from center of the activated button
+        const rect = trigger.getBoundingClientRect();
+        originX = rect.left + rect.width / 2;
+        originY = rect.top + rect.height / 2;
+      }
       navigateTo(targetPage, true, originX, originY);
     }
   });
 
-  // Check URL hash on initial load
-  const hash = window.location.hash.replace('#/', '').replace('#', '');
-  if (['home', 'work', 'about', 'journey'].includes(hash)) {
-    navigateTo(hash, false, window.innerWidth / 2, window.innerHeight / 2, true);
-  } else {
-    navigateTo('home', false, window.innerWidth / 2, window.innerHeight / 2, true);
-  }
+  // Check URL hash on initial load (handles /#about, /#about?edit, /?edit#about, etc.)
+  const page = getCleanPageFromHash(window.location.hash);
+  navigateTo(page, false, window.innerWidth / 2, window.innerHeight / 2, true);
 
   // Support browser forward/back
   window.addEventListener('popstate', () => {
-    const currentHash = window.location.hash.replace('#/', '').replace('#', '') || 'home';
+    const currentHash = getCleanPageFromHash(window.location.hash);
     navigateTo(currentHash, false, window.innerWidth / 2, window.innerHeight / 2);
   });
 }
@@ -60,7 +71,14 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
   if (isInitial || !irisOverlay || typeof irisOverlay.animate !== 'function') {
     switchActivePage(targetPage);
     if (updateHistory) {
-      history.pushState(null, '', '#' + targetPage);
+      const isEdit = window.location.search.includes('edit') || window.location.hash.includes('edit');
+      let url = '#' + targetPage;
+      if (window.location.search.includes('edit')) {
+        url = window.location.pathname + window.location.search + '#' + targetPage;
+      } else if (isEdit) {
+        url = '#' + targetPage + '?edit';
+      }
+      history.pushState(null, '', url);
     }
     window.dispatchEvent(new CustomEvent('filmlab:pagechange', { detail: { page: targetPage } }));
     return;
@@ -100,7 +118,14 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
     // Step 5: While fully covered, swap page, scroll to top, update active nav & dispatch events
     switchActivePage(targetPage);
     if (updateHistory) {
-      history.pushState(null, '', '#' + targetPage);
+      const isEdit = window.location.search.includes('edit') || window.location.hash.includes('edit');
+      let url = '#' + targetPage;
+      if (window.location.search.includes('edit')) {
+        url = window.location.pathname + window.location.search + '#' + targetPage;
+      } else if (isEdit) {
+        url = '#' + targetPage + '?edit';
+      }
+      history.pushState(null, '', url);
     }
     window.scrollTo(0, 0);
 
