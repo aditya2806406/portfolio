@@ -17,26 +17,7 @@ import { initHome } from './home.js';
 function renderContent() {
   // Home page components (Hero, Marquee, Stats, Filmstrip) are initialized in initHome()
 
-  // 5. Work Project Accordion
-  const projectList = document.getElementById('project-accordion');
-  if (projectList && siteData.projects) {
-    projectList.innerHTML = siteData.projects.map((p, idx) => `
-      <div class="project-row" data-c="Read">
-        <div class="project-row-header">
-          <div class="project-row-title">${p.name}</div>
-          <div class="project-row-year">${p.year}</div>
-        </div>
-        <div class="project-panel">
-          <div class="project-panel-inner">
-            <p class="sub">${p.description}</p>
-            <div class="project-tags">
-              ${p.tags.map(t => '<span class="tag-pill">' + t + '</span>').join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
+  // Work page components (3D Drum Reel & Accordion) are built and initialized in initReel()
 
   // 6. About Kit (Skills)
   const kitContainer = document.getElementById('kit-grid');

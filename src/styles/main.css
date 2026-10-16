@@ -606,11 +606,11 @@ body.noir .marquee-strip {
   margin-top: 4px;
 }
 
-/* WORK PAGE ("SELECTED SCENES") */
+/* WORK PAGE ("SELECTED SCENES") — SECTION 10 */
 .reel-container {
   --w: min(300px, 62vw);
   height: min(66vh, 540px);
-  margin: 6vh auto;
+  margin: 6vh auto 0 auto;
   perspective: 1500px;
   display: flex;
   align-items: center;
@@ -618,52 +618,142 @@ body.noir .marquee-strip {
   position: relative;
   touch-action: pan-y;
   user-select: none;
+  cursor: grab;
+  outline: none;
+}
+
+.reel-container:active {
+  cursor: grabbing;
+}
+
+.reel-container:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 8px;
+  border-radius: 6px;
 }
 
 .reel-drum {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
+.reel-pane {
+  position: absolute;
+  width: var(--w);
+  aspect-ratio: 3/4;
+  left: calc(var(--w) / -2);
+  top: calc(var(--w) * -0.667);
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.reel-pane h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(22px, 2.5vw, 30px);
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  margin-bottom: 6px;
+}
+
+.reel-pane p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.3;
+}
+
+.reel-caption {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-top: 4vh;
+  margin-bottom: 10vh;
+  min-height: 1.5em;
+  user-select: none;
+}
+
+/* PROJECT ACCORDION LIST (§10.2) */
 .project-accordion {
-  margin-top: 10vh;
+  margin-top: 6vh;
+  margin-bottom: 12vh;
 }
 
 .project-row {
   border-top: 1px solid var(--line);
-  padding: 3.2vh 0;
+  position: relative;
   transition: padding-left 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
-  cursor: pointer;
 }
 
 .project-row:last-child {
   border-bottom: 1px solid var(--line);
 }
 
-.project-row:hover {
+.project-row:hover,
+.project-row.is-open {
   padding-left: 3vw;
+}
+
+.project-row:hover .project-row-title,
+.project-row.is-open .project-row-title {
   color: var(--amber);
 }
 
 .project-row-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 20px;
+  align-items: baseline;
+  padding: 3.2vh 0;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.project-row-header:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
 }
 
 .project-row-title {
   font-family: var(--serif);
   font-weight: 300;
   font-size: clamp(34px, 6vw, 84px);
+  line-height: 1;
   letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: color 0.3s ease;
 }
 
 .project-row-year {
   font-size: 13px;
   color: var(--mute);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 .project-panel {
@@ -679,8 +769,17 @@ body.noir .marquee-strip {
 
 .project-panel-inner {
   min-height: 0;
-  padding-top: 2vh;
   padding-bottom: 4vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.project-panel-inner p.sub {
+  color: var(--mute);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .project-tags {
@@ -696,6 +795,71 @@ body.noir .marquee-strip {
   padding: 4px 12px;
   font-size: 12px;
   color: var(--ink);
+}
+
+.project-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.project-action-link {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.project-action-link.primary {
+  color: var(--amber);
+}
+
+.project-action-link:hover {
+  text-decoration: underline;
+}
+
+/* FLOATING POSTER PREVIEW (§10.2) */
+.floating-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 300px;
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  overflow: hidden;
+}
+
+.floating-preview.visible {
+  opacity: 1;
+}
+
+.floating-preview-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+@media (pointer: coarse) {
+  .floating-preview {
+    display: none !important;
+  }
 }
 
 /* ABOUT PAGE ("DIRECTOR'S NOTES") */
