@@ -149,6 +149,11 @@ export const siteData = {
       title: 'AgentGuard & Hedera Certifications',
       text: 'Engineered sub-5ms policy enforcement proxies for autonomous AI agents and attained Hedera Certified Developer Associate and Certified Foundation credentials.',
     },
+    {
+      dateLabel: '2024',
+      title: 'Supply Chain Analytics & Intelligence',
+      text: 'Engineered predictive logistics delay platforms and classification pipelines evaluating enterprise multi-tier shipping networks.',
+    },
   ],
 
   portrait: {

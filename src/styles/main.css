@@ -1459,12 +1459,19 @@ body.noir .marquee-strip {
   }
 }
 
-/* JOURNEY PAGE ("THE LONG TAKE") */
+/* JOURNEY PAGE ("THE LONG TAKE") — SECTION 12 & SECTION 18.3 */
 .timeline-section {
+  --timeline-indent: 6vw;
   margin-top: 8vh;
-  padding-left: 6vw;
+  padding-left: var(--timeline-indent);
   max-width: 900px;
   position: relative;
+}
+
+@media (max-width: 600px) {
+  .timeline-section {
+    --timeline-indent: 36px;
+  }
 }
 
 .timeline-rail {
@@ -1484,6 +1491,7 @@ body.noir .marquee-strip {
   height: 0;
   background-color: var(--amber);
   box-shadow: 0 0 12px var(--amber);
+  will-change: height;
 }
 
 .timeline-entry {
@@ -1499,7 +1507,7 @@ body.noir .marquee-strip {
 
 .timeline-node {
   position: absolute;
-  left: calc(-6vw - 10px);
+  left: calc(-1 * var(--timeline-indent) + 4.5px);
   top: 12px;
   width: 12px;
   height: 12px;
@@ -1507,6 +1515,7 @@ body.noir .marquee-strip {
   background-color: var(--bg);
   border: 1px solid var(--mute);
   transition: border-color 0.6s ease, background-color 0.6s ease, box-shadow 0.6s ease;
+  box-sizing: border-box;
 }
 
 .timeline-entry.lit .timeline-node {
@@ -1520,6 +1529,7 @@ body.noir .marquee-strip {
   letter-spacing: 0.06em;
   color: var(--teal);
   margin-bottom: 8px;
+  font-weight: 600;
 }
 
 .timeline-title {
@@ -1527,9 +1537,10 @@ body.noir .marquee-strip {
   font-size: clamp(28px, 4vw, 48px);
   line-height: 1.1;
   margin-bottom: 12px;
+  color: var(--ink);
 }
 
-/* RESUME BLOCK (JOURNEY PAGE) */
+/* RESUME BLOCK (JOURNEY PAGE) — SECTION 18.3 */
 .resume-block {
   margin-top: 6vh;
   border: 1px solid var(--line);
@@ -1541,6 +1552,24 @@ body.noir .marquee-strip {
   align-items: center;
   gap: 24px;
   background: linear-gradient(110deg, rgba(255, 178, 74, 0.08), transparent 60%);
+}
+
+.resume-info {
+  max-width: 520px;
+}
+
+.resume-title {
+  font-family: var(--serif);
+  font-size: clamp(26px, 4vw, 44px);
+  line-height: 1.15;
+  margin-top: 8px;
+  color: var(--ink);
+}
+
+.resume-sub {
+  font-size: 13px;
+  margin-top: 8px;
+  color: var(--mute);
 }
 
 .resume-actions {
@@ -1557,20 +1586,37 @@ body.noir .marquee-strip {
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--ink);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  user-select: none;
+  cursor: pointer;
+  background: transparent;
 }
 
-.btn-pill:hover:not([aria-disabled="true"]) {
+.btn-pill:hover:not([aria-disabled="true"]):not(.disabled) {
   background-color: var(--ink);
   color: var(--bg);
 }
 
-.btn-pill[aria-disabled="true"] {
+.btn-pill.btn-ghost {
+  color: var(--mute);
+  border-color: var(--line);
+}
+
+.btn-pill.btn-ghost:hover {
+  border-color: var(--ink);
+  background-color: var(--ink);
+  color: var(--bg);
+}
+
+.btn-pill[aria-disabled="true"],
+.btn-pill.disabled {
   opacity: 0.35;
   pointer-events: none;
+  cursor: default;
 }
 
 

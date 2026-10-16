@@ -14,6 +14,7 @@ import { initReel } from './reel.js';
 import { initScroll } from './scroll.js';
 import { initHome } from './home.js';
 import { initAbout } from './about.js';
+import { initJourney } from './journey.js';
 
 function renderContent() {
   // Home page components (Hero, Marquee, Stats, Filmstrip) are initialized in initHome()
@@ -22,18 +23,7 @@ function renderContent() {
 
   // About page components (Portrait, Contact Sheet, Kit, Bars, Certified Prints, Awards) are initialized in initAbout()
 
-  // 10. Journey Timeline
-  const timelineContainer = document.getElementById('timeline-entries');
-  if (timelineContainer && siteData.journey) {
-    timelineContainer.innerHTML = siteData.journey.map(j => `
-      <div class="timeline-entry lit">
-        <div class="timeline-node"></div>
-        <div class="timeline-date">${j.dateLabel}</div>
-        <h3 class="timeline-title">${j.title}</h3>
-        <p class="sub">${j.text}</p>
-      </div>
-    `).join('');
-  }
+  // Journey page components (Timeline, Rail, Lit nodes, Résumé block) are initialized in initJourney()
 
   // 11. Footer Elements
   const footerEmail = document.getElementById('footer-email');
@@ -67,5 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initScroll();
   initHome();
   initAbout();
+  initJourney();
   console.log('Film Lab Portfolio initialized successfully.');
 });
