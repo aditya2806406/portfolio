@@ -1,18 +1,266 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Aditya Prakash — Cinematic 3D Developer Portfolio & Creative Technologist" />
-    <meta name="theme-color" content="#080A10" />
-    <title>Aditya Prakash | Cinematic 3D Developer Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  </head>
-  <body class="bg-[#080A10] text-[#F4F6FC] antialiased selection:bg-[#65E5FF]/20 selection:text-[#65E5FF] overflow-x-hidden">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Aditya Prakash — Cinematic Film Lab Portfolio. Full-Stack Developer, Data Analytics, and Machine Learning.">
+  <title>Aditya Prakash — Cinematic Film Lab Portfolio</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+  <!-- PERSISTENT GLOBAL LAYERS (Z-INDEX STACK) -->
+  <canvas id="bokeh-canvas" class="bokeh-layer" aria-hidden="true"></canvas>
+  <canvas id="gyro-canvas" class="gyro-layer" aria-hidden="true"></canvas>
+  <div id="grain" class="grain-layer" aria-hidden="true"></div>
+  <div id="progress-bar" class="progress-bar" aria-hidden="true"></div>
+  <div id="frame-counter" class="frame-counter" aria-hidden="true">FRAME 0001 / 0480</div>
+
+  <!-- CUSTOM LENS CURSOR (Z60, Z61) -->
+  <div id="lens-cursor" class="lens-cursor" aria-hidden="true">
+    <span id="lens-label" class="lens-label"></span>
+  </div>
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- OVERLAYS (FLASH, IRIS, LOADER) -->
+  <div id="flash-overlay" class="flash-overlay" aria-hidden="true"></div>
+  
+  <div id="iris-overlay" class="iris-overlay" aria-hidden="true">
+    <div class="iris-content">
+      <span class="kicker" id="iris-kicker">SCENE 01</span>
+      <h2 id="iris-title">The Reel</h2>
+    </div>
+  </div>
+
+  <div id="loader-overlay" class="loader-overlay" aria-hidden="true">
+    <div class="loader-dial">
+      <div class="radar-sweep"></div>
+      <div class="loader-crosshair-h"></div>
+      <div class="loader-crosshair-v"></div>
+      <div id="loader-num" class="loader-num">000</div>
+    </div>
+    <div class="loader-caption">DEVELOPING FRAMES</div>
+  </div>
+
+  <!-- FIXED HEADER & NAVIGATION (Z20) -->
+  <header class="site-header" role="banner">
+    <button class="logo-btn" data-go="home" aria-label="Go to Home / The Reel" data-c="Home">AP</button>
+    <nav class="site-nav" role="navigation" aria-label="Primary navigation">
+      <button class="nav-btn" data-go="home" data-c="View" aria-current="page">Reel</button>
+      <button class="nav-btn" data-go="work" data-c="View">Work</button>
+      <button class="nav-btn" data-go="about" data-c="View">About</button>
+      <button class="nav-btn" data-go="journey" data-c="View">Journey</button>
+      <button class="mode-toggle-btn" id="mode-toggle" data-c="Switch" aria-label="Toggle colour or noir mode">◐ Color</button>
+    </nav>
+  </header>
+
+  <!-- MAIN VIEW CONTAINER (4 PAGES TOGGLED BY CLASS) -->
+  <main class="page-container" id="main-content">
+    
+    <!-- PAGE 1: HOME — THE REEL -->
+    <section id="page-home" class="page on" data-page="home">
+      <div class="wrap">
+        <div class="hero-section">
+          <h1 class="hero-name" id="hero-name">Aditya Prakash</h1>
+          
+          <div class="role-line-wrap">
+            <div class="role-bar"></div>
+            <div class="role-text" id="role-text">Full-Stack Developer · Data Analytics · Machine Learning</div>
+          </div>
+
+          <div class="flashlight-container">
+            <div class="flashlight-base" id="flashlight-base">
+              Engineering resilient systems at the intersection of full-stack architecture, machine learning models, and data analytics.
+            </div>
+            <div class="flashlight-hint">MOVE YOUR CURSOR OVER THE SENTENCE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARQUEE STRIP -->
+      <div class="marquee-strip">
+        <div class="marquee-content" id="marquee-inner"></div>
+      </div>
+
+      <!-- STATS GRID -->
+      <div class="wrap">
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <!-- NOW SHOWING FILMSTRIP -->
+        <div style="margin-top: 10vh; margin-bottom: 12vh;">
+          <span class="kicker">PREVIEW REEL</span>
+          <h2>Now <em>showing</em></h2>
+          <p class="sub" style="margin-top: 1.5vh;">Interactive snapshots from flagship engineering case studies.</p>
+          <div class="filmstrip-wrap" id="filmstrip-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: WORK — SELECTED SCENES -->
+    <section id="page-work" class="page" data-page="work">
+      <div class="wrap">
+        <span class="kicker">PORTFOLIO REEL</span>
+        <h2>Selected <em>scenes</em></h2>
+        <p class="sub" style="margin-top: 1.5vh;">
+          Drag to spin the 3D drum reel or explore detailed architectural case studies below.
+        </p>
+
+        <!-- 3D REEL CONTAINER -->
+        <div class="reel-container" id="reel-container" tabindex="0" role="group" aria-label="3D Project Drum Reel">
+          <div class="reel-drum" id="reel-drum">
+            <div class="sub" style="text-align: center; margin: auto;">3D Drum Reel (Foundation initialized · Expanded in Phase 5)</div>
+          </div>
+        </div>
+
+        <!-- PROJECT ACCORDION LIST -->
+        <div class="project-accordion" id="project-accordion"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: ABOUT — DIRECTOR'S NOTES -->
+    <section id="page-about" class="page" data-page="about">
+      <div class="wrap">
+        <div class="about-grid">
+          <!-- LEFT COLUMN: PORTRAIT & CONTACT SHEET -->
+          <div>
+            <div class="portrait-frame" id="portrait-frame">
+              <div class="portrait-slate-tag">TAKE 01 — SLATE</div>
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 24px; text-align: center;">
+                <span style="font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--ink);">Aditya Prakash</span>
+                <span class="sub" style="font-size: 12px; margin-top: 8px;">B.Tech CSE (Data Analytics) · VIT-AP University</span>
+              </div>
+            </div>
+
+            <div class="contact-sheet-panel">
+              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #0e2a22, #174d3b);">
+                <div style="font-size: 11px; font-weight: 800; color: var(--teal);">01</div>
+                <div style="font-family: var(--serif); font-size: 14px;">Vision AI</div>
+              </div>
+              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #2a1b0e, #4d2b17);">
+                <div style="font-size: 11px; font-weight: 800; color: var(--amber);">02</div>
+                <div style="font-family: var(--serif); font-size: 14px;">Defense</div>
+              </div>
+              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #10212e, #19374d);">
+                <div style="font-size: 11px; font-weight: 800; color: var(--teal);">03</div>
+                <div style="font-family: var(--serif); font-size: 14px;">Civic Tech</div>
+              </div>
+              <div class="contact-sheet-tile" style="background: linear-gradient(145deg, #1f122e, #3b1d52);">
+                <div style="font-size: 11px; font-weight: 800; color: var(--amber);">04</div>
+                <div style="font-family: var(--serif); font-size: 14px;">Analytics</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: PHILOSOPHY -->
+          <div>
+            <span class="kicker">ENGINEERING PHILOSOPHY</span>
+            <h2>Director's <em>notes</em></h2>
+            <p class="sub" style="font-size: 19px; line-height: 1.5; color: var(--ink); margin-top: 3vh; margin-bottom: 2vh;">
+              Engineering software architectures and analytical systems with mathematical precision and cinematic care.
+            </p>
+            <p class="sub">
+              Aditya Prakash is a computer science undergraduate specializing in Data Analytics at VIT-AP University (2024–2028). His focus spans full-stack web applications, machine learning architectures, and low-latency security layers for autonomous agents.
+            </p>
+          </div>
+        </div>
+
+        <!-- TECHNICAL KIT -->
+        <div class="kit-section">
+          <span class="kicker">TECHNICAL ARSENAL</span>
+          <h2>The <em>kit</em></h2>
+          <div class="kit-grid" id="kit-grid"></div>
+        </div>
+
+        <!-- PROFICIENCY BARS -->
+        <div class="proficiency-section">
+          <span class="kicker">CORE COMPETENCIES</span>
+          <h2 style="font-size: clamp(32px, 5vw, 64px); margin-bottom: 4vh;">Proficiency <em>calibrations</em></h2>
+          <div id="proficiency-bars"></div>
+        </div>
+
+        <!-- CERTIFIED PRINTS GALLERY (SECTION 18.2) -->
+        <div style="margin-top: 14vh;">
+          <span class="kicker">VERIFIED CREDENTIALS</span>
+          <h2>Certified <em>prints</em></h2>
+          <p class="sub" style="margin-top: 1.5vh;">Completed professional certifications and distributed systems credentials.</p>
+          <div class="certificates-grid" id="certificates-grid"></div>
+        </div>
+
+        <!-- HALL OF FRAMES (AWARDS) -->
+        <div class="awards-section">
+          <span class="kicker">MILESTONES & HONORS</span>
+          <h2>Hall of <em>frames</em></h2>
+          <div id="awards-list" style="margin-top: 4vh;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 4: JOURNEY — THE LONG TAKE -->
+    <section id="page-journey" class="page" data-page="journey">
+      <div class="wrap">
+        <span class="kicker">TIMELINE & EVOLUTION</span>
+        <h2>The <em>long take</em></h2>
+        <p class="sub" style="margin-top: 1.5vh;">
+          A chronological trace of technical leadership, competitive hackathons, and software engineering.
+        </p>
+
+        <!-- VERTICAL TIMELINE -->
+        <div class="timeline-section">
+          <div class="timeline-rail"></div>
+          <div class="timeline-progress" id="timeline-progress"></div>
+          <div id="timeline-entries"></div>
+        </div>
+
+        <!-- RÉSUMÉ BLOCK (SECTION 18.3) -->
+        <div class="resume-block" id="resume-block">
+          <div>
+            <span class="kicker">RÉSUMÉ — THE FULL CUT</span>
+            <h3 style="font-size: clamp(26px, 4vw, 44px); margin-top: 8px;">Aditya Prakash Curriculum Vitae</h3>
+            <p class="sub" style="font-size: 13px; margin-top: 6px;">Aditya_Prakash_Resume.pdf · Verified & Updated 2026</p>
+          </div>
+          <div class="resume-actions">
+            <a href="./assets/resume/resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-pill" data-c="Open">View PDF</a>
+            <a href="./assets/resume/resume.pdf" download="Aditya_Prakash_Resume.pdf" class="btn-pill" data-c="Save">Download</a>
+            <button type="button" class="btn-pill" style="opacity: 0.6; cursor: default;" title="Edit mode upload active with ?edit">Upload (Edit Mode)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PERSISTENT GLOBAL FOOTER (Z2) -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="wrap">
+      <p class="sub" style="margin: 0 auto;">Have a scene in mind?</p>
+      <div>
+        <a href="mailto:prakashaditya2806@gmail.com" class="magnetic-email" data-c="Send" id="footer-email">
+          prakashaditya2806@gmail.com
+        </a>
+      </div>
+      <div class="footer-socials" id="footer-socials"></div>
+      <div class="footer-copyright" id="footer-copyright">
+        © 2026 Aditya Prakash. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- FAILSAFE INLINE SCRIPT (SECTION 5) -->
+  <script>
+    setTimeout(function() {
+      if (!window.filmlabLoaded) {
+        window.filmlabLoaded = true;
+        document.body.classList.add('in');
+        var l = document.getElementById('loader-overlay');
+        if (l) l.remove();
+      }
+    }, 6500);
+  </script>
+
+  <!-- ENTRY MODULE -->
+  <script type="module" src="./src/main.js"></script>
+</body>
 </html>
