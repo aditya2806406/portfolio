@@ -1,1 +1,1 @@
-export * from './src/router.js';\n
+export * from './src/router.js';

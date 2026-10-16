@@ -1,1 +1,1 @@
-export * from './src/mode.js';\n
+export * from './src/mode.js';

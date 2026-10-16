@@ -977,6 +977,7 @@ body.noir .grain-layer {
 }
 
 /* PLACEHOLDER STUBS FOR ADVANCED OVERLAYS (EXPANDED IN PHASES 2 & 3) */
+/* IRIS APERTURE OVERLAY (SECTION 4) */
 .iris-overlay {
   position: fixed;
   inset: 0;
@@ -988,6 +989,58 @@ body.noir .grain-layer {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.iris-overlay.busy {
+  pointer-events: all;
+}
+
+.iris-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#iris-kicker,
+.iris-kicker {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bg);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  margin-bottom: 2vh;
+}
+
+#iris-title,
+.iris-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(48px, 9vw, 120px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--bg);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.iris-overlay.t #iris-kicker,
+.iris-overlay.t .iris-kicker {
+  opacity: 0.7;
+  transform: translateY(0);
+}
+
+.iris-overlay.t #iris-title,
+.iris-overlay.t .iris-title {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* FIRST-VISIT LOADER OVERLAY (SECTION 5) */
@@ -1115,5 +1168,96 @@ body.noir .grain-layer {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* CUSTOM LENS CURSOR (SECTION 8) */
+@media (pointer: fine) {
+  body, button, a, input, select, textarea, [data-go], [data-c] {
+    cursor: none !important;
+  }
+
+  .lens-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+    pointer-events: none;
+    z-index: 60;
+    mix-blend-mode: difference;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-100px, -100px);
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.2s ease;
+    opacity: 0;
+    will-change: transform, width, height;
+  }
+
+  .lens-cursor.visible {
+    opacity: 1;
+  }
+
+  .lens-cursor.active {
+    width: 92px;
+    height: 92px;
+    background-color: #ffffff;
+    border-color: #ffffff;
+    mix-blend-mode: normal;
+  }
+
+  .lens-label {
+    display: none;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #000000;
+    text-transform: uppercase;
+    text-align: center;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .lens-cursor.active .lens-label {
+    display: block;
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--amber);
+    pointer-events: none;
+    z-index: 61;
+    transform: translate(-100px, -100px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    will-change: transform;
+  }
+
+  .cursor-dot.visible {
+    opacity: 1;
+  }
+
+  .lens-cursor.active + .cursor-dot {
+    opacity: 0;
+  }
+}
+
+@media (pointer: coarse) {
+  .lens-cursor,
+  .cursor-dot {
+    display: none !important;
   }
 }

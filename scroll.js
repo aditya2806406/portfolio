@@ -1,1 +1,1 @@
-export * from './src/scroll.js';\n
+export * from './src/scroll.js';
