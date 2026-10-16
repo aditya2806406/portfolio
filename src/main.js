@@ -12,53 +12,10 @@ import { initBackground } from './background.js';
 import { initGyro } from './gyro.js';
 import { initReel } from './reel.js';
 import { initScroll } from './scroll.js';
+import { initHome } from './home.js';
 
 function renderContent() {
-  // 1. Hero Content
-  const heroNameEl = document.getElementById('hero-name');
-  if (heroNameEl && siteData.site.name) {
-    heroNameEl.innerHTML = siteData.site.name.split('').map(letter => {
-      if (letter === ' ') return ' ';
-      return '<span class="letter-mask"><span class="letter-inner">' + letter + '</span></span>';
-    }).join('');
-  }
-
-  const roleTextEl = document.getElementById('role-text');
-  if (roleTextEl) roleTextEl.textContent = siteData.site.roleLine;
-
-  const flashlightBaseEl = document.getElementById('flashlight-base');
-  if (flashlightBaseEl && siteData.site.flashSentence) {
-    flashlightBaseEl.textContent = siteData.site.flashSentence.base;
-  }
-
-  // 2. Marquee
-  const marqueeInner = document.getElementById('marquee-inner');
-  if (marqueeInner && siteData.marquee) {
-    const phrase = siteData.marquee.map(w => w + ' <span class="star">✦</span> ').join('');
-    marqueeInner.innerHTML = phrase.repeat(4);
-  }
-
-  // 3. Stats
-  const statsContainer = document.getElementById('stats-grid');
-  if (statsContainer && siteData.stats) {
-    statsContainer.innerHTML = siteData.stats.map(s => `
-      <div class="stat-item">
-        <div class="stat-num">${s.value}${s.suffix}</div>
-        <div class="stat-label">${s.label}</div>
-      </div>
-    `).join('');
-  }
-
-  // 4. Now Showing Filmstrip
-  const filmstripWrap = document.getElementById('filmstrip-wrap');
-  if (filmstripWrap && siteData.projects) {
-    filmstripWrap.innerHTML = siteData.projects.slice(0, 3).map(p => `
-      <div class="filmstrip-card" style="background: ${p.gradient};" data-go="work" data-c="Open">
-        <h3>${p.name}</h3>
-        <p>${p.tagline}</p>
-      </div>
-    `).join('');
-  }
+  // Home page components (Hero, Marquee, Stats, Filmstrip) are initialized in initHome()
 
   // 5. Work Project Accordion
   const projectList = document.getElementById('project-accordion');
@@ -177,5 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initGyro();
   initReel();
   initScroll();
+  initHome();
   console.log('Film Lab Portfolio initialized successfully.');
 });
