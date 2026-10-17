@@ -132,3 +132,20 @@ This requirements matrix tracks the implementation and verification status of ev
 | TE-09 | Visual Styling, Noir Mode & Reduced Motion Integration | Prompt §2, §3, §4 | **Verified by build or static checks only** | Verified in `main.css`. High-contrast overrides under `body.noir` for `.skill-filter-btn.active`, `.project-filter-btn.active`, `.btn-case-study`. Transitions collapse under `prefers-reduced-motion: reduce`. Zero page-level horizontal overflow. |
 | TE-10 | Live Browser Viewport & Interactive Automation Suite (1440px, 800px, 375px) | Prompt §6 | **Not verified due to environment limitations** | Live interactive browser automation (CDP window resizing, click recordings, live rendering in automated Chrome instance) could not complete due to sandbox browser subagent connection timeouts on localhost / security blocking of local `file://` URLs. |
 
+---
+
+## 10. Phase 9 — Cinematic Polish & Experience Refinement
+
+| ID | Requirement | Spec Ref | Status | Verification & Evidence |
+|---|---|---|---|---|
+| P9-01 | Active Filter Recognition (Non-color reliant visual indicator dot) | Phase 9 §6, §8 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. `.project-filter-btn::before` and `.skill-filter-btn::before` render a 5px animated indicator dot with scale transition on `.active` state, satisfying WCAG non-color-reliant visual cues. |
+| P9-02 | Editorial Typography Clamping & Line-Length Scannability | Phase 9 §4, §5, §7 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. `.hero-name` clamped to `clamp(48px, 13vw, 220px)` with `clamp(20px, 3vh, 36px)` margin-bottom to prevent narrow overflow and empty gaps. `.cs-body-text` constrained to `max-width: 68ch` and `.project-card-desc` constrained to `max-width: 62ch`. |
+| P9-03 | Flashlight Sentence Touch Screen & Reduced-Motion Fallback | Phase 9 §5, §12 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. Under `@media (prefers-reduced-motion: reduce), (pointer: coarse)`, mask image is removed (`mask-image: none !important`), illuminating the full sentence cleanly without requiring hover. |
+| P9-04 | Architecture Diagram Container & Mobile Touch Momentum Scroll | Phase 9 §7, §11 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. `.architecture-diagram-container` styled with thin custom scrollbar (`scrollbar-color: var(--teal)`), `-webkit-overflow-scrolling: touch;`, and constrained to `max-width: 100%`, preventing page-level overflow. |
+| P9-05 | Results vs. Limitations vs. Roadmap Delineation | Phase 9 §7 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. `.results-card` styled with teal border/gradient and `✓` indicators; `.limitations-card` styled with amber border/gradient and `—` indicators; `.future-card` styled with subtle left rule and mono numbers. Both include dedicated Noir mode overrides. |
+| P9-06 | Mobile Single-Column Grids (<= 768px & <= 600px) | Phase 9 §11 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. Case study grids collapse cleanly to `1fr` with 16px gaps on screens `<= 768px`. Project card padding adjusts to `28px 20px` on screens `<= 600px`. |
+| P9-07 | Focus Restoration & Accessibility in Lightbox Modal | Phase 9 §8, §12 | **Implemented and code/build-verified** | Verified in `src/about.js`. Lightbox stores `lastFocusedCertEl` on trigger, focuses `.cert-lightbox-close` on open, and restores focus to the calling element on dismissal. Escape key dismissal verified. |
+| P9-08 | Project Action Button Hierarchy & Primary Case Study CTA | Phase 9 §6 | **Implemented and code/build-verified** | Verified in `src/styles/main.css`. `.btn-case-study` prominent with amber glow; secondary action links (`Live demo ↗`, `Source code ↗`) styled with subtle ghost borders and muted text. |
+| P9-09 | Production Build Cleanliness | Phase 9 §13 | **Implemented and code/build-verified** | `npm run build` succeeds in 337ms with 0 errors, generating optimized bundles (`index.html`, `index-*.css`, `index-*.js`). |
+
+

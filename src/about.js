@@ -595,8 +595,12 @@ function setupCertLightbox() {
   });
 }
 
+let lastFocusedCertEl = null;
+
 function showCertLightbox(cert) {
   if (!certLightboxEl) setupCertLightbox();
+
+  lastFocusedCertEl = document.activeElement;
 
   certLightboxEl.removeAttribute('hidden');
   certLightboxEl.classList.add('open');
@@ -635,6 +639,11 @@ function showCertLightbox(cert) {
     </div>
   `;
 
+  const closeBtn = certLightboxEl.querySelector('.cert-lightbox-close');
+  if (closeBtn) {
+    closeBtn.focus();
+  }
+
   const inner = certLightboxEl.querySelector('.cert-lightbox-inner');
   if (!prefersReducedMotion && inner) {
     inner.animate(
@@ -656,6 +665,13 @@ function closeCertLightbox() {
   certLightboxEl.classList.remove('open');
   certLightboxEl.setAttribute('hidden', '');
   certLightboxEl.innerHTML = '';
+
+  if (lastFocusedCertEl && typeof lastFocusedCertEl.focus === 'function') {
+    try {
+      lastFocusedCertEl.focus();
+    } catch (_) {}
+    lastFocusedCertEl = null;
+  }
 }
 
 /**
