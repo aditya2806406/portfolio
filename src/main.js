@@ -25,23 +25,15 @@ function renderContent() {
 
   // Journey page components (Timeline, Rail, Lit nodes, Résumé block) are initialized in initJourney()
 
-  // 11. Footer Elements
+  // 11. Connect & Footer Elements
   const footerEmail = document.getElementById('footer-email');
   if (footerEmail && siteData.site.email) {
     footerEmail.href = 'mailto:' + siteData.site.email;
-    footerEmail.textContent = siteData.site.email;
   }
 
   const footerCopyright = document.getElementById('footer-copyright');
   if (footerCopyright && siteData.site.copyright) {
     footerCopyright.textContent = siteData.site.copyright;
-  }
-
-  const footerSocials = document.getElementById('footer-socials');
-  if (footerSocials && siteData.site.socials) {
-    footerSocials.innerHTML = siteData.site.socials.map(s => `
-      <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="footer-social-link">${s.label}</a>
-    `).join('');
   }
 }
 

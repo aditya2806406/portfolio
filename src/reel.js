@@ -272,74 +272,63 @@ function buildAccordion() {
   const container = document.getElementById('project-accordion');
   if (!container || !siteData.projects) return;
 
+  container.className = 'project-accordion projects-cards-grid';
   container.innerHTML = siteData.projects
     .map(
       (p, idx) => `
-    <div class="project-row" data-idx="${idx}" data-c="Read">
-      <button class="project-row-header" 
-              id="project-header-${idx}" 
-              aria-expanded="false" 
-              aria-controls="project-panel-${idx}">
-        <span class="project-row-title">${p.name}</span>
-        <span class="project-row-year">${p.year}</span>
-      </button>
-      <div class="project-panel" 
-           id="project-panel-${idx}" 
-           role="region" 
-           aria-labelledby="project-header-${idx}">
-        <div class="project-panel-inner">
-          <div>
-            <p class="sub">${p.description}</p>
-            <div class="project-actions">
-              ${
-                p.demoUrl && p.demoUrl !== '#'
-                  ? `<a href="${p.demoUrl}" target="_blank" rel="noopener noreferrer" class="project-action-link primary" data-c="Visit">Live demo ↗</a>`
-                  : ''
-              }
-              ${
-                p.codeUrl
-                  ? `<a href="${p.codeUrl}" target="_blank" rel="noopener noreferrer" class="project-action-link" data-c="Code">Source code ↗</a>`
-                  : ''
-              }
-            </div>
-          </div>
-          <div class="project-tags">
-            ${p.tags.map((t) => `<span class="tag-pill">${t}</span>`).join('')}
-          </div>
+    <article class="project-card" id="project-card-${idx}" data-idx="${idx}" data-c="Read">
+      <div class="project-card-ghost" aria-hidden="true">${String(idx + 1).padStart(2, '0')}</div>
+      <div class="project-card-meta">
+        <span class="project-card-kicker">SCENE 0${idx + 1}</span>
+        <span class="project-card-year">${p.year}</span>
+      </div>
+      <h3 class="project-card-title">${p.name}</h3>
+      <p class="project-card-tagline">${p.tagline}</p>
+      <p class="project-card-desc">${p.description}</p>
+      <div class="project-card-stack">
+        <span class="project-stack-label">TECHNOLOGIES & ARCHITECTURE</span>
+        <div class="project-tags">
+          ${p.tags.map((t) => `<span class="tag-pill">${t}</span>`).join('')}
         </div>
       </div>
-    </div>
+      <div class="project-actions">
+        ${
+          p.demoUrl && p.demoUrl !== '#'
+            ? `<a href="${p.demoUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill btn-primary-accent" data-c="Visit">Live demo ↗</a>`
+            : ''
+        }
+        ${
+          p.codeUrl
+            ? `<a href="${p.codeUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill" data-c="Code">Source code ↗</a>`
+            : ''
+        }
+      </div>
+    </article>
   `
     )
     .join('');
 
-  accordionRows = Array.from(container.querySelectorAll('.project-row'));
+  accordionRows = Array.from(container.querySelectorAll('.project-card'));
 
-  accordionRows.forEach((row) => {
-    const headerBtn = row.querySelector('.project-row-header');
-    const idx = parseInt(row.getAttribute('data-idx'), 10);
+  accordionRows.forEach((card) => {
+    const idx = parseInt(card.getAttribute('data-idx'), 10);
 
-    headerBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleProjectAccordion(idx);
-    });
-
-    // Floating preview triggers on row hover/focus
-    row.addEventListener('pointerenter', () => {
+    // Floating preview triggers on card hover/focus
+    card.addEventListener('pointerenter', () => {
       showFloatingPreview(idx);
     });
 
-    row.addEventListener('pointerleave', () => {
+    card.addEventListener('pointerleave', () => {
       if (activeRowIdx === idx) {
         hideFloatingPreview();
       }
     });
 
-    headerBtn.addEventListener('focus', () => {
+    card.addEventListener('focusin', () => {
       showFloatingPreview(idx);
     });
 
-    headerBtn.addEventListener('blur', () => {
+    card.addEventListener('focusout', () => {
       hideFloatingPreview();
     });
   });
@@ -364,45 +353,20 @@ function buildAccordion() {
 }
 
 export function openProjectAccordion(idx, shouldScroll = false) {
-  if (!accordionRows.length) return;
+  const card = document.getElementById(`project-card-${idx}`);
+  if (!card) return;
 
-  accordionRows.forEach((row, i) => {
-    const panel = row.querySelector('.project-panel');
-    const btn = row.querySelector('.project-row-header');
-    if (i === idx) {
-      row.classList.add('is-open');
-      if (panel) panel.classList.add('open');
-      if (btn) btn.setAttribute('aria-expanded', 'true');
-
-      if (shouldScroll) {
-        setTimeout(() => {
-          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
-      }
-    } else {
-      row.classList.remove('is-open');
-      if (panel) panel.classList.remove('open');
-      if (btn) btn.setAttribute('aria-expanded', 'false');
-    }
-  });
+  if (shouldScroll) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.add('highlight-card');
+    setTimeout(() => {
+      card.classList.remove('highlight-card');
+    }, 1800);
+  }
 }
 
 function toggleProjectAccordion(idx) {
-  const row = accordionRows[idx];
-  if (!row) return;
-
-  const isOpen = row.classList.contains('is-open');
-  if (isOpen) {
-    // Close it
-    row.classList.remove('is-open');
-    const panel = row.querySelector('.project-panel');
-    const btn = row.querySelector('.project-row-header');
-    if (panel) panel.classList.remove('open');
-    if (btn) btn.setAttribute('aria-expanded', 'false');
-  } else {
-    // Open this one, close all others
-    openProjectAccordion(idx, false);
-  }
+  openProjectAccordion(idx, true);
 }
 
 /**
