@@ -107,21 +107,32 @@
 
     <!-- PAGE 2: WORK — SELECTED SCENES -->
     <section id="page-work" class="page" data-page="work">
-      <div class="wrap">
-        <span class="kicker">PORTFOLIO REEL</span>
-        <h2>Selected <em>scenes</em></h2>
-        <p class="sub" style="margin-top: 1.5vh;">
-          Drag to spin the 3D drum reel or explore detailed architectural case studies below.
-        </p>
+      <!-- WORK OVERVIEW (3D REEL & PROJECT SHOWCASE) -->
+      <div id="work-overview" class="work-view">
+        <div class="wrap">
+          <span class="kicker">PORTFOLIO REEL</span>
+          <h2>Selected <em>scenes</em></h2>
+          <p class="sub" style="margin-top: 1.5vh;">
+            Drag to spin the 3D drum reel or explore detailed architectural case studies below.
+          </p>
 
-        <!-- 3D REEL CONTAINER (§10.1) -->
-        <div class="reel-container" id="reel-container" tabindex="0" role="group" aria-label="3D Project Drum Reel" data-c="Drag">
-          <div class="reel-drum" id="reel-drum"></div>
+          <!-- PROJECT CATEGORY FILTERS -->
+          <nav class="project-filters-nav" id="project-filters-nav" aria-label="Filter projects by engineering discipline"></nav>
+
+          <!-- 3D REEL CONTAINER (§10.1) -->
+          <div class="reel-container" id="reel-container" tabindex="0" role="group" aria-label="3D Project Drum Reel" data-c="Drag">
+            <div class="reel-drum" id="reel-drum"></div>
+          </div>
+          <div class="reel-caption" id="reel-caption" aria-live="polite"></div>
+
+          <!-- PROJECT SHOWCASE CARDS (§10.2) -->
+          <div class="project-accordion" id="project-accordion"></div>
         </div>
-        <div class="reel-caption" id="reel-caption" aria-live="polite"></div>
+      </div>
 
-        <!-- PROJECT ACCORDION LIST (§10.2) -->
-        <div class="project-accordion" id="project-accordion"></div>
+      <!-- DEDICATED CASE STUDY SCENE -->
+      <div id="work-case-study" class="work-view" style="display: none;">
+        <div class="wrap" id="case-study-container" tabindex="-1"></div>
       </div>
     </section>
 
@@ -153,6 +164,7 @@
         <div class="kit-section">
           <span class="kicker">TECHNICAL ARSENAL</span>
           <h2>The <em>kit</em></h2>
+          <div class="skill-filters-nav" id="skill-filters-nav" role="toolbar" aria-label="Skill category filters"></div>
           <div class="kit-grid" id="kit-grid"></div>
         </div>
 

@@ -1,9 +1,7 @@
-/**
- * FILM LAB PORTFOLIO — ROUTER (SINGLE-PAGE APPLICATION & IRIS APERTURE TRANSITIONS)
- * Sections 0, 3, 4 of master specification.
- */
+import { siteData } from './data.js';
 
 let activePage = 'home';
+let activeRoute = 'home';
 let isTransitioning = false;
 
 const SCENES = {
@@ -13,11 +11,18 @@ const SCENES = {
   journey: { kicker: 'SCENE 04', title: 'The long take' },
 };
 
+export function parseRoute(rawHash) {
+  if (!rawHash) return { page: 'home', slug: null, route: 'home' };
+  let cleaned = rawHash.replace(/^[#/]+/, '').split('?')[0].trim().toLowerCase();
+  const parts = cleaned.split('/').filter(Boolean);
+  const page = ['home', 'work', 'about', 'journey'].includes(parts[0]) ? parts[0] : 'home';
+  const slug = (page === 'work' && parts.length > 1) ? parts[1] : null;
+  const route = slug ? `${page}/${slug}` : page;
+  return { page, slug, route };
+}
+
 export function getCleanPageFromHash(rawHash) {
-  if (!rawHash) return 'home';
-  let cleaned = rawHash.replace(/^#\/?/, '');
-  cleaned = cleaned.split('?')[0].split('/')[0].trim().toLowerCase();
-  return ['home', 'work', 'about', 'journey'].includes(cleaned) ? cleaned : 'home';
+  return parseRoute(rawHash).page;
 }
 
 export function initRouter() {
@@ -43,25 +48,34 @@ export function initRouter() {
     }
   });
 
-  // Check URL hash on initial load (handles /#about, /#about?edit, /?edit#about, etc.)
-  const page = getCleanPageFromHash(window.location.hash);
-  navigateTo(page, false, window.innerWidth / 2, window.innerHeight / 2, true);
+  // Check URL hash on initial load (handles /#about, /#work/agriscan, etc.)
+  const { route } = parseRoute(window.location.hash);
+  navigateTo(route, false, window.innerWidth / 2, window.innerHeight / 2, true);
 
   // Support browser forward/back
   window.addEventListener('popstate', () => {
-    const currentHash = getCleanPageFromHash(window.location.hash);
-    navigateTo(currentHash, false, window.innerWidth / 2, window.innerHeight / 2);
+    const { route } = parseRoute(window.location.hash);
+    navigateTo(route, false, window.innerWidth / 2, window.innerHeight / 2);
   });
 }
 
-export function navigateTo(targetPage, updateHistory = true, originX = null, originY = null, isInitial = false) {
+export function navigateTo(targetRoute, updateHistory = true, originX = null, originY = null, isInitial = false) {
   if (isTransitioning) return;
-  if (targetPage === activePage && document.getElementById('page-' + targetPage)?.classList.contains('on')) {
+
+  const { page, slug, route } = parseRoute(targetRoute.startsWith('#') ? targetRoute : '#' + targetRoute);
+
+  // Find project if slug is present
+  let project = null;
+  if (slug && siteData.projects) {
+    project = siteData.projects.find((p) => p.id === slug || p.caseStudy?.slug === slug);
+  }
+  const effectiveSlug = project ? (project.caseStudy?.slug || project.id) : null;
+  const effectiveRoute = effectiveSlug ? `${page}/${effectiveSlug}` : page;
+
+  // If already on this exact route and page is active, do not re-navigate
+  if (effectiveRoute === activeRoute && document.getElementById('page-' + page)?.classList.contains('on')) {
     return;
   }
-
-  const pages = ['home', 'work', 'about', 'journey'];
-  if (!pages.includes(targetPage)) targetPage = 'home';
 
   const irisOverlay = document.getElementById('iris-overlay');
   const irisKicker = document.getElementById('iris-kicker');
@@ -69,18 +83,20 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
 
   // Initial load does not play the full iris wipe
   if (isInitial || !irisOverlay || typeof irisOverlay.animate !== 'function') {
-    switchActivePage(targetPage);
+    switchActivePage(page, effectiveSlug);
     if (updateHistory) {
       const isEdit = window.location.search.includes('edit') || window.location.hash.includes('edit');
-      let url = '#' + targetPage;
+      let url = '#' + effectiveRoute;
       if (window.location.search.includes('edit')) {
-        url = window.location.pathname + window.location.search + '#' + targetPage;
+        url = window.location.pathname + window.location.search + '#' + effectiveRoute;
       } else if (isEdit) {
-        url = '#' + targetPage + '?edit';
+        url = '#' + effectiveRoute + '?edit';
       }
       history.pushState(null, '', url);
     }
-    window.dispatchEvent(new CustomEvent('filmlab:pagechange', { detail: { page: targetPage } }));
+    window.dispatchEvent(
+      new CustomEvent('filmlab:pagechange', { detail: { page, slug: effectiveSlug, route: effectiveRoute } })
+    );
     return;
   }
 
@@ -90,13 +106,19 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
   const closeDuration = prefersReducedMotion ? 1 : 800;
 
   // Origin point
-  const x = (originX !== null && originX !== undefined) ? originX : window.innerWidth / 2;
-  const y = (originY !== null && originY !== undefined) ? originY : window.innerHeight / 2;
+  const x = originX !== null && originX !== undefined ? originX : window.innerWidth / 2;
+  const y = originY !== null && originY !== undefined ? originY : window.innerHeight / 2;
 
   // Set scene kicker and title
-  const sceneInfo = SCENES[targetPage] || SCENES.home;
-  if (irisKicker) irisKicker.textContent = sceneInfo.kicker;
-  if (irisTitle) irisTitle.textContent = sceneInfo.title;
+  let sceneKicker = SCENES[page]?.kicker || 'SCENE 01';
+  let sceneTitle = SCENES[page]?.title || 'The Reel';
+  if (page === 'work' && project) {
+    sceneKicker = 'CASE STUDY';
+    sceneTitle = project.name;
+  }
+
+  if (irisKicker) irisKicker.textContent = sceneKicker;
+  if (irisTitle) irisTitle.textContent = sceneTitle;
 
   isTransitioning = true;
   irisOverlay.classList.add('busy');
@@ -116,21 +138,23 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
 
   openAnim.onfinish = () => {
     // Step 5: While fully covered, swap page, scroll to top, update active nav & dispatch events
-    switchActivePage(targetPage);
+    switchActivePage(page, effectiveSlug);
     if (updateHistory) {
       const isEdit = window.location.search.includes('edit') || window.location.hash.includes('edit');
-      let url = '#' + targetPage;
+      let url = '#' + effectiveRoute;
       if (window.location.search.includes('edit')) {
-        url = window.location.pathname + window.location.search + '#' + targetPage;
+        url = window.location.pathname + window.location.search + '#' + effectiveRoute;
       } else if (isEdit) {
-        url = '#' + targetPage + '?edit';
+        url = '#' + effectiveRoute + '?edit';
       }
       history.pushState(null, '', url);
     }
     window.scrollTo(0, 0);
 
-    // Dispatch filmlab:pagechange for bokeh hues and gyro coordinates
-    window.dispatchEvent(new CustomEvent('filmlab:pagechange', { detail: { page: targetPage } }));
+    // Dispatch filmlab:pagechange for bokeh hues, gyro coordinates, reel, and case study
+    window.dispatchEvent(
+      new CustomEvent('filmlab:pagechange', { detail: { page, slug: effectiveSlug, route: effectiveRoute } })
+    );
 
     // Step 6: Title reveal with class 't'
     irisOverlay.classList.add('t');
@@ -159,7 +183,7 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
         isTransitioning = false;
 
         // If journey, trigger timeline check/update
-        if (targetPage === 'journey') {
+        if (page === 'journey') {
           window.dispatchEvent(new CustomEvent('filmlab:timelineupdate'));
         }
       };
@@ -167,9 +191,9 @@ export function navigateTo(targetPage, updateHistory = true, originX = null, ori
   };
 }
 
-function switchActivePage(targetPage) {
+function switchActivePage(targetPage, targetSlug = null) {
   const pages = ['home', 'work', 'about', 'journey'];
-  pages.forEach(p => {
+  pages.forEach((p) => {
     const el = document.getElementById('page-' + p);
     if (el) {
       if (p === targetPage) {
@@ -180,8 +204,25 @@ function switchActivePage(targetPage) {
     }
   });
 
+  // Toggle work-overview vs work-case-study
+  const workOverview = document.getElementById('work-overview');
+  const workCaseStudy = document.getElementById('work-case-study');
+  if (targetPage === 'work') {
+    if (targetSlug) {
+      if (workOverview) workOverview.style.display = 'none';
+      if (workCaseStudy) workCaseStudy.style.display = 'block';
+    } else {
+      if (workOverview) workOverview.style.display = 'block';
+      if (workCaseStudy) workCaseStudy.style.display = 'none';
+    }
+  } else {
+    // When leaving work, keep work-overview ready
+    if (workOverview) workOverview.style.display = 'block';
+    if (workCaseStudy) workCaseStudy.style.display = 'none';
+  }
+
   // Update nav current state
-  document.querySelectorAll('.nav-btn').forEach(btn => {
+  document.querySelectorAll('.nav-btn').forEach((btn) => {
     if (btn.getAttribute('data-go') === targetPage) {
       btn.setAttribute('aria-current', 'page');
     } else {
@@ -190,8 +231,13 @@ function switchActivePage(targetPage) {
   });
 
   activePage = targetPage;
+  activeRoute = targetSlug ? `${targetPage}/${targetSlug}` : targetPage;
 }
 
 export function getActivePage() {
   return activePage;
+}
+
+export function getActiveRoute() {
+  return activeRoute;
 }

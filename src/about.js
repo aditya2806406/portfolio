@@ -3,12 +3,13 @@
  * Sections 11, 18.0, 18.1, 18.2, 18.4 of master specification.
  */
 
-import { siteData } from './data.js';
+import { siteData, SKILL_CATEGORIES, SKILL_CATEGORY_MAP } from './data.js';
 
 let isEditMode = false;
 let portraitObjectUrl = null;
 let uploadedCerts = [];
 let certLightboxEl = null;
+let activeSkillCategory = 'all';
 
 /**
  * Check if edit mode is active via URL query param (?edit) or hash
@@ -70,6 +71,7 @@ export function renderAbout() {
   renderEditNotice();
   renderPortrait();
   renderContactSheet();
+  renderSkillFilters();
   renderKit();
   renderProficiencyBars();
   renderCertificates();
@@ -270,23 +272,86 @@ function renderContactSheet() {
 }
 
 /**
+ * Render Skill Category Filters (Feature A)
+ * Categories: ALL, LANGUAGES, FRONTEND, BACKEND, DATABASES & TOOLS, ANALYTICS, ML & VISION
+ */
+function renderSkillFilters() {
+  const nav = document.getElementById('skill-filters-nav');
+  if (!nav || !SKILL_CATEGORIES) return;
+
+  nav.innerHTML = SKILL_CATEGORIES.map(cat => {
+    const isSelected = cat.id === activeSkillCategory;
+    return `
+      <button type="button" 
+              class="skill-filter-btn ${isSelected ? 'active' : ''}" 
+              data-cat="${cat.id}"
+              aria-pressed="${isSelected ? 'true' : 'false'}"
+              data-c="Filter">
+        ${cat.label}
+      </button>
+    `;
+  }).join('');
+
+  nav.querySelectorAll('.skill-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const catId = btn.getAttribute('data-cat');
+      if (catId === activeSkillCategory) return;
+      activeSkillCategory = catId;
+
+      // Update button visual and aria states
+      nav.querySelectorAll('.skill-filter-btn').forEach(b => {
+        const active = b.getAttribute('data-cat') === activeSkillCategory;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+
+      renderKit();
+    });
+  });
+}
+
+/**
  * Render Technical Kit (Skills chips) (§11.2)
- * "grid auto-fit minmax(220px,1fr), gap 40px, margin-top 6vh. Three groups, each with an
- * italic Fraunces 24px amber heading and pill chips (1px line border, radius 99px, 13px text, padding 4px 12px).
- * Chip hover: background becomes --ink, text --bg, and the chip lifts translateY(-3px) (.3s)."
+ * When ALL is selected, display all original groups.
+ * When a specific category is selected, display only matching skills without empty headings or duplicate chips.
  */
 function renderKit() {
   const kitContainer = document.getElementById('kit-grid');
   if (!kitContainer || !siteData.about.kit) return;
 
-  kitContainer.innerHTML = siteData.about.kit.map(kg => `
-    <div class="kit-group">
-      <h3 class="kit-group-title">${kg.group}</h3>
-      <div class="chip-container">
-        ${kg.chips.map(chip => `<span class="skill-chip">${chip}</span>`).join('')}
+  if (activeSkillCategory === 'all') {
+    kitContainer.innerHTML = siteData.about.kit.map(kg => `
+      <div class="kit-group kit-fade-in">
+        <h3 class="kit-group-title">${kg.group}</h3>
+        <div class="chip-container">
+          ${kg.chips.map(chip => `<span class="skill-chip">${chip}</span>`).join('')}
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  } else {
+    const activeCatObj = SKILL_CATEGORIES.find(c => c.id === activeSkillCategory);
+    const categoryTitle = activeCatObj ? activeCatObj.label : 'FILTERED';
+
+    // Collect matching chips across groups without duplicates
+    const matchedChips = [];
+    siteData.about.kit.forEach(kg => {
+      kg.chips.forEach(chip => {
+        const cats = SKILL_CATEGORY_MAP[chip] || [];
+        if (cats.includes(activeSkillCategory) && !matchedChips.includes(chip)) {
+          matchedChips.push(chip);
+        }
+      });
+    });
+
+    kitContainer.innerHTML = `
+      <div class="kit-group filtered-kit-group kit-fade-in">
+        <h3 class="kit-group-title">${categoryTitle} ARSENAL</h3>
+        <div class="chip-container">
+          ${matchedChips.map(chip => `<span class="skill-chip">${chip}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
 }
 
 /**
@@ -363,8 +428,11 @@ function renderCertificates() {
     card.setAttribute('data-c', 'View');
     card.setAttribute('aria-label', `View ${cert.title} certificate`);
 
-    const gradientBg = cert.gradient || 'linear-gradient(145deg, #10212e, #1b2d2f)';
-    card.style.background = gradientBg;
+    if (cert.type === 'image' && cert.file) {
+      card.style.background = `linear-gradient(rgba(2, 13, 15, 0.45), rgba(2, 13, 15, 0.85)), url('${cert.file}') center/cover no-repeat`;
+    } else {
+      card.style.background = cert.gradient || 'linear-gradient(145deg, #10212e, #1b2d2f)';
+    }
 
     // Inner card markup
     let badgeHtml = '';
@@ -406,9 +474,6 @@ function renderCertificates() {
   });
 
   // Edit Mode Upload Tile (§18.2)
-  // "The last tile is always the upload tile ('+ Add certificates'): dashed 1px mute border, no fill,
-  // centred '+' (Fraunces 200, 54px) and label; hover turns border and text amber.
-  // In production it is shown only in edit mode."
   if (isEditMode) {
     const uploadTile = document.createElement('label');
     uploadTile.className = 'certificate-upload-tile';
@@ -448,14 +513,10 @@ function renderCertificates() {
 }
 
 /**
- * Open Certificate in Lightbox (for images/placeholders) or new tab (for PDFs) (§18.2)
+ * Open Certificate in Lightbox (for images/placeholders) or embed PDF directly (§18.2)
  */
 function openCertificate(cert) {
-  if (cert.type === 'pdf') {
-    window.open(cert.file, '_blank', 'noopener,noreferrer');
-  } else {
-    showCertLightbox(cert);
-  }
+  showCertLightbox(cert);
 }
 
 /**
@@ -507,9 +568,6 @@ function removeUploadedCert(id) {
 
 /**
  * Setup Lightbox modal DOM & controls (§18.2)
- * "Image: a full-screen lightbox (fixed, z-index 55, background rgba(2,13,15,.94), fades in .4s).
- * The image is shown contain inside a box min(88vw,1000px) × min(78vh,720px), scaling from .94 to 1 over .6s.
- * Clicking anywhere or pressing Escape closes it."
  */
 function setupCertLightbox() {
   certLightboxEl = document.getElementById('cert-lightbox');
@@ -525,7 +583,8 @@ function setupCertLightbox() {
   }
 
   certLightboxEl.addEventListener('click', (e) => {
-    // Clicking anywhere closes it
+    // Clicking anywhere closes it, unless interacting with actions or embed
+    if (e.target.closest('.cert-lightbox-actions') || e.target.closest('iframe')) return;
     closeCertLightbox();
   });
 
@@ -544,20 +603,34 @@ function showCertLightbox(cert) {
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  let mediaHtml = '';
+  if (cert.type === 'image' && cert.file) {
+    mediaHtml = `<img src="${cert.file}" alt="${cert.title}" class="cert-lightbox-img" />`;
+  } else if (cert.type === 'pdf' && cert.file) {
+    mediaHtml = `
+      <iframe src="${cert.file}#toolbar=0" title="${cert.title}" class="cert-lightbox-embed" style="width: 100%; height: 100%; border: none; border-radius: 4px; background: #ffffff;"></iframe>
+    `;
+  } else {
+    mediaHtml = `
+      <div class="cert-lightbox-placeholder">
+        <span class="kicker" style="color: var(--teal);">VERIFIED CREDENTIAL</span>
+        <h3 class="cert-lightbox-title">${cert.title}</h3>
+        <p class="sub" style="margin-top: 1vh; font-size: 14px;">${cert.issuer} · ${cert.year}</p>
+        <div class="cert-lightbox-seal">TAKE 01 — VERIFIED</div>
+      </div>
+    `;
+  }
+
   certLightboxEl.innerHTML = `
     <div class="cert-lightbox-inner" role="document">
       <button type="button" class="cert-lightbox-close" aria-label="Close certificate lightbox" data-c="Close">✕</button>
       <div class="cert-lightbox-frame" style="background: ${cert.gradient || 'linear-gradient(145deg, #10212e, #1b2d2f)'};">
-        ${cert.type === 'image' && cert.file ? `
-          <img src="${cert.file}" alt="${cert.title}" class="cert-lightbox-img" />
-        ` : `
-          <div class="cert-lightbox-placeholder">
-            <span class="kicker" style="color: var(--teal);">VERIFIED CREDENTIAL</span>
-            <h3 class="cert-lightbox-title">${cert.title}</h3>
-            <p class="sub" style="margin-top: 1vh; font-size: 14px;">${cert.issuer} · ${cert.year}</p>
-            <div class="cert-lightbox-seal">TAKE 01 — VERIFIED</div>
-          </div>
-        `}
+        ${mediaHtml}
+      </div>
+      <div class="cert-lightbox-actions" style="margin-top: 14px; display: flex; gap: 12px; justify-content: center; z-index: 10;">
+        <a href="${cert.file}" target="_blank" rel="noopener noreferrer" class="btn-pill" data-c="Open" style="background: var(--amber); color: #020d0f; font-weight: 700; border-color: var(--amber);">
+          ${cert.type === 'pdf' ? 'Open PDF in New Window ↗' : 'View Full Image ↗'}
+        </a>
       </div>
     </div>
   `;
