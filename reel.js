@@ -1,1 +1,1 @@
-export * from './src/reel.js';\n
+export * from './src/reel.js';

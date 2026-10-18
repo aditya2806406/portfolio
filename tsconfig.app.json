@@ -6,6 +6,8 @@
     "module": "ESNext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": false,
     "strict": true,
 
     /* Bundler mode */
@@ -26,4 +28,3 @@
   },
   "include": ["src"]
 }
-

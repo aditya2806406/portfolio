@@ -306,6 +306,22 @@ body.noir .grain-layer {
   color: var(--bg);
 }
 
+@media (max-width: 480px) {
+  .site-header {
+    padding: 14px 4vw;
+  }
+  .site-nav {
+    gap: clamp(8px, 2.5vw, 14px);
+  }
+  .nav-btn {
+    font-size: 12px;
+  }
+  .mode-toggle-btn {
+    font-size: 11.5px;
+    padding: 2px 8px;
+  }
+}
+
 /* MAIN CONTENT PAGES (Z-INDEX 2) */
 .page-container {
   position: relative;
@@ -1009,8 +1025,9 @@ body.noir .project-filter-btn.active {
   display: none !important;
 }
 
-.btn-case-study {
-  background: var(--amber);
+.btn-case-study,
+.btn-pill.btn-case-study {
+  background: var(--amber) !important;
   color: #020d0f !important;
   border-color: var(--amber) !important;
   font-weight: 700 !important;
@@ -1018,23 +1035,28 @@ body.noir .project-filter-btn.active {
   box-shadow: 0 0 14px rgba(255, 178, 74, 0.25);
 }
 
-.btn-case-study:hover {
-  background: #ffa024;
-  border-color: #ffa024;
+.btn-case-study:hover,
+.btn-pill.btn-case-study:hover {
+  background: #ffa024 !important;
+  border-color: #ffa024 !important;
+  color: #020d0f !important;
   transform: translateY(-2px);
   box-shadow: 0 0 22px rgba(255, 178, 74, 0.45);
 }
 
-body.noir .btn-case-study {
-  background: #ffffff;
+body.noir .btn-case-study,
+body.noir .btn-pill.btn-case-study {
+  background: #ffffff !important;
   color: #000000 !important;
   border-color: #ffffff !important;
   box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
 }
 
-body.noir .btn-case-study:hover {
-  background: #e6e6e6;
-  border-color: #e6e6e6;
+body.noir .btn-case-study:hover,
+body.noir .btn-pill.btn-case-study:hover {
+  background: #e6e6e6 !important;
+  border-color: #e6e6e6 !important;
+  color: #000000 !important;
   box-shadow: 0 0 22px rgba(255, 255, 255, 0.4);
 }
 
@@ -1068,6 +1090,22 @@ body.noir .btn-case-study:hover {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  border-color: var(--line);
+  color: var(--mute);
+  transition: all 0.25s ease;
+}
+
+.btn-back-scenes:hover {
+  border-color: var(--teal);
+  color: var(--ink);
+  background: rgba(47, 181, 176, 0.1);
+  transform: translateX(-3px);
+}
+
+body.noir .btn-back-scenes:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .case-study-meta-top {
@@ -2010,6 +2048,7 @@ body.noir .arch-node {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 40px;
   margin-top: 4vh;
+  min-height: 220px;
 }
 
 .kit-group-title {

@@ -589,8 +589,35 @@ function setupCertLightbox() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !certLightboxEl.hasAttribute('hidden')) {
+    if (!certLightboxEl || certLightboxEl.hasAttribute('hidden')) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
       closeCertLightbox();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusables = Array.from(
+        certLightboxEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
+
+      if (!focusables.length) return;
+      const firstFocusable = focusables[0];
+      const lastFocusable = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable || !certLightboxEl.contains(document.activeElement)) {
+          e.preventDefault();
+          lastFocusable.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusable || !certLightboxEl.contains(document.activeElement)) {
+          e.preventDefault();
+          firstFocusable.focus();
+        }
+      }
     }
   });
 }
