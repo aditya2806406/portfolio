@@ -1,8 +1,8 @@
-# Aditya Prakash — Personal Portfolio
+﻿# Aditya Prakash â€” Personal Portfolio
 
 A personal portfolio showcasing my projects, technical skills, education, certifications, and journey in software development, data analytics, and artificial intelligence.
 
-**Live website:** Add your deployed Vercel URL here  
+**Live website:** https://portfolio-five-taupe-68.vercel.app/  
 **GitHub repository:** https://github.com/aditya2806406/portfolio
 
 ---
@@ -32,7 +32,7 @@ A personal portfolio showcasing my projects, technical skills, education, certif
 
 This website is my personal portfolio and online professional profile. It brings my work, technical interests, education, certifications, and contact information together in one place.
 
-The experience uses a film-inspired visual language: atmospheric backgrounds, layered visual effects, animated transitions, interactive project presentations, and a coordinated Colour/Noir appearance mode. These elements support the content rather than replace it—the main goal is to make my work easy to explore and understand.
+The experience uses a film-inspired visual language: atmospheric backgrounds, layered visual effects, animated transitions, interactive project presentations, and a coordinated Colour/Noir appearance mode. These elements support the content rather than replace itâ€”the main goal is to make my work easy to explore and understand.
 
 The site is implemented as a lightweight, client-side single-page application using **HTML, CSS, and JavaScript ES modules**, powered by **Vite** for local development and production builds. It does not require a React runtime or a dedicated application backend for its current portfolio experience.
 
@@ -41,7 +41,7 @@ The site is implemented as a lightweight, client-side single-page application us
 - Present my projects and technical interests in a clear, professional format.
 - Explain each project's problem, architecture, technologies, implementation, trade-offs, and possible next steps.
 - Make skills, education, certifications, and career milestones easy to browse.
-- Provide straightforward access to my résumé and professional contact links.
+- Provide straightforward access to my rÃ©sumÃ© and professional contact links.
 - Deliver a distinctive interactive experience while maintaining responsive layouts and usability.
 - Keep portfolio content and project information organized so it can be updated as my experience grows.
 
@@ -81,9 +81,9 @@ The site is implemented as a lightweight, client-side single-page application us
 - Responsive layouts adapt to desktop, tablet, and mobile screen sizes.
 - Keyboard interaction and reduced-motion preferences are considered in relevant interface components.
 
-### Résumé and contact
+### RÃ©sumÃ© and contact
 
-- Access the résumé wherever the relevant résumé link is presented.
+- Access the rÃ©sumÃ© wherever the relevant rÃ©sumÃ© link is presented.
 - Find professional contact details and profile links.
 - View available certification and project information without navigating to a separate website.
 
@@ -91,7 +91,7 @@ The site is implemented as a lightweight, client-side single-page application us
 
 ## Website Sections
 
-### 1. Home — “The Reel”
+### 1. Home â€” â€œThe Reelâ€
 
 The landing view introduces me and establishes the visual identity of the site.
 
@@ -104,7 +104,7 @@ It includes:
 
 The purpose of this view is to establish who I am and guide visitors toward my work and background.
 
-### 2. Work — “Selected Scenes”
+### 2. Work â€” â€œSelected Scenesâ€
 
 This section presents the featured projects as an interactive collection.
 
@@ -117,7 +117,7 @@ It includes:
 
 The case studies communicate the problem being addressed, the solution, technical architecture, implementation approach, key decisions, known limitations, and potential future work.
 
-### 3. About — “Director's Notes”
+### 3. About â€” â€œDirector's Notesâ€
 
 This section provides more detail about my background and technical capabilities.
 
@@ -131,7 +131,7 @@ It includes:
 
 Any skill, proficiency, credential, or achievement displayed should reflect the information maintained in the project's data and assets.
 
-### 4. Journey — “The Long Take”
+### 4. Journey â€” â€œThe Long Takeâ€
 
 This section presents my education and development journey in a timeline-oriented layout.
 
@@ -143,7 +143,7 @@ It is designed to help visitors understand key milestones, learning progress, an
 
 The portfolio currently highlights the following projects. These are high-level summaries; individual case studies contain further detail.
 
-### AgriScan — Crop Disease Detection and Treatment Advisor
+### AgriScan â€” Crop Disease Detection and Treatment Advisor
 
 AgriScan is a crop-disease assistance project focused on analyzing leaf images and presenting a predicted disease, confidence information, and treatment guidance.
 
@@ -158,7 +158,7 @@ AgriScan is a crop-disease assistance project focused on analyzing leaf images a
 
 Predictions from a machine-learning model should be treated as assistance rather than a substitute for expert agricultural advice.
 
-### AgentGuard — Runtime Security for AI Agent Actions
+### AgentGuard â€” Runtime Security for AI Agent Actions
 
 AgentGuard is designed as a security layer between an AI agent and external services. It evaluates proposed actions against configured policies before allowing an action to proceed.
 
@@ -173,7 +173,7 @@ AgentGuard is designed as a security layer between an AI agent and external serv
 
 The implemented integrations and policy coverage may vary by project version. Do not assume every planned integration is complete.
 
-### SarkariSetu — Government Scheme Discovery
+### SarkariSetu â€” Government Scheme Discovery
 
 SarkariSetu is a web project focused on helping users discover relevant government schemes and access related information.
 
@@ -234,59 +234,59 @@ The main source code is organized into page modules, shared effects, data, and s
 
 ```text
 portfolio/
-├── public/
-│   ├── assets/
-│   │   ├── certificates/
-│   │   ├── portrait/
-│   │   └── resume/
-│   ├── favicon.svg
-│   └── icons.svg
-├── src/
-│   ├── about.js
-│   ├── background.js
-│   ├── cinematic-effects.js
-│   ├── cursor.js
-│   ├── data.js
-│   ├── gyro.js
-│   ├── home.js
-│   ├── journey.js
-│   ├── loader.js
-│   ├── main.js
-│   ├── mode.js
-│   ├── reel.js
-│   ├── reveal.js
-│   ├── router.js
-│   ├── scroll.js
-│   └── styles/
-│       └── main.css
-├── index.html
-├── package.json
-├── package-lock.json
-├── tsconfig.app.json
-├── tsconfig.node.json
-├── vite.config.js
-└── README.md
+â”œâ”€â”€ public/
+â”‚   â”œâ”€â”€ assets/
+â”‚   â”‚   â”œâ”€â”€ certificates/
+â”‚   â”‚   â”œâ”€â”€ portrait/
+â”‚   â”‚   â””â”€â”€ resume/
+â”‚   â”œâ”€â”€ favicon.svg
+â”‚   â””â”€â”€ icons.svg
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ about.js
+â”‚   â”œâ”€â”€ background.js
+â”‚   â”œâ”€â”€ cinematic-effects.js
+â”‚   â”œâ”€â”€ cursor.js
+â”‚   â”œâ”€â”€ data.js
+â”‚   â”œâ”€â”€ gyro.js
+â”‚   â”œâ”€â”€ home.js
+â”‚   â”œâ”€â”€ journey.js
+â”‚   â”œâ”€â”€ loader.js
+â”‚   â”œâ”€â”€ main.js
+â”‚   â”œâ”€â”€ mode.js
+â”‚   â”œâ”€â”€ reel.js
+â”‚   â”œâ”€â”€ reveal.js
+â”‚   â”œâ”€â”€ router.js
+â”‚   â”œâ”€â”€ scroll.js
+â”‚   â””â”€â”€ styles/
+â”‚       â””â”€â”€ main.css
+â”œâ”€â”€ index.html
+â”œâ”€â”€ package.json
+â”œâ”€â”€ package-lock.json
+â”œâ”€â”€ tsconfig.app.json
+â”œâ”€â”€ tsconfig.node.json
+â”œâ”€â”€ vite.config.js
+â””â”€â”€ README.md
 ```
 
 ### Important modules
 
-- `index.html` — main HTML entry point and page markup.
-- `src/main.js` — initializes the application and its modules.
-- `src/router.js` — coordinates hash-based view navigation.
-- `src/data.js` — central source for portfolio content, project information, skill categories, and related data.
-- `src/home.js` — home-view interactions and presentation behavior.
-- `src/reel.js` — work view, project reel, filters, and case-study rendering.
-- `src/about.js` — about view, skills, credentials, and related interactions.
-- `src/journey.js` — journey/timeline view.
-- `src/reveal.js` — scroll-reveal initialization and observation of dynamic content.
-- `src/background.js` — atmospheric canvas background.
-- `src/gyro.js` — gyroscopic canvas effects.
-- `src/cinematic-effects.js` — shared cinematic visual effects.
-- `src/cursor.js` — cursor interaction effects.
-- `src/loader.js` — loading experience and transition behavior.
-- `src/mode.js` — Colour/Noir mode switching.
-- `src/scroll.js` — scroll-related behavior.
-- `src/styles/main.css` — main visual system, responsive rules, layouts, and animations.
+- `index.html` â€” main HTML entry point and page markup.
+- `src/main.js` â€” initializes the application and its modules.
+- `src/router.js` â€” coordinates hash-based view navigation.
+- `src/data.js` â€” central source for portfolio content, project information, skill categories, and related data.
+- `src/home.js` â€” home-view interactions and presentation behavior.
+- `src/reel.js` â€” work view, project reel, filters, and case-study rendering.
+- `src/about.js` â€” about view, skills, credentials, and related interactions.
+- `src/journey.js` â€” journey/timeline view.
+- `src/reveal.js` â€” scroll-reveal initialization and observation of dynamic content.
+- `src/background.js` â€” atmospheric canvas background.
+- `src/gyro.js` â€” gyroscopic canvas effects.
+- `src/cinematic-effects.js` â€” shared cinematic visual effects.
+- `src/cursor.js` â€” cursor interaction effects.
+- `src/loader.js` â€” loading experience and transition behavior.
+- `src/mode.js` â€” Colour/Noir mode switching.
+- `src/scroll.js` â€” scroll-related behavior.
+- `src/styles/main.css` â€” main visual system, responsive rules, layouts, and animations.
 
 The exact implementation should always be checked in the current source files; this section is an architectural guide.
 
@@ -396,7 +396,7 @@ Deploy the generated production output through the hosting platform's build proc
 
 The install command can remain `npm install`.
 
-After deployment, test the live site on desktop and mobile. Check navigation, project case studies, filters, visual effects, certificate viewing, and résumé links. Verify that the résumé file opens correctly before considering deployment complete.
+After deployment, test the live site on desktop and mobile. Check navigation, project case studies, filters, visual effects, certificate viewing, and rÃ©sumÃ© links. Verify that the rÃ©sumÃ© file opens correctly before considering deployment complete.
 
 ### Updating the live website
 
@@ -447,16 +447,16 @@ Keep project descriptions factual. Include measured results only when verified, 
 4. Test the certificate viewer and keyboard dismissal behavior where applicable.
 5. Rebuild and test the site.
 
-### Updating the résumé
+### Updating the rÃ©sumÃ©
 
-The repository has résumé files at:
+The repository has rÃ©sumÃ© files at:
 
 ```text
 public/assets/resume/resume.pdf
 public/Aditya_Prakash_Resume.pdf
 ```
 
-If both paths are used by the interface, replace both with the intended valid PDF so they remain consistent. Confirm that the resulting files open correctly and that the live download link points to the intended résumé.
+If both paths are used by the interface, replace both with the intended valid PDF so they remain consistent. Confirm that the resulting files open correctly and that the live download link points to the intended rÃ©sumÃ©.
 
 ### Portrait and certificate assets
 
@@ -512,7 +512,7 @@ Read the first relevant error in the terminal and check the file and line it ide
 - Reload the page.
 - If testing production, rebuild with `npm run build` and restart `npm run preview`.
 
-### An asset or résumé link fails
+### An asset or rÃ©sumÃ© link fails
 
 - Confirm that the file exists under `public/`.
 - Check the URL used by the component. Files inside `public/` are normally served from the site root, not from a `/public/` URL prefix.
@@ -550,7 +550,7 @@ These are possible improvements, not claims that they are already implemented.
 ## Contact
 
 **Aditya Prakash**  
-B.Tech Computer Science and Engineering — Data Analytics
+B.Tech Computer Science and Engineering â€” Data Analytics
 
 - **Email:** [prakashaditya2806@gmail.com](mailto:prakashaditya2806@gmail.com)
 - **GitHub:** [github.com/aditya2806406](https://github.com/aditya2806406)
@@ -565,3 +565,4 @@ No license is currently specified in this README. Unless a license is added to t
 ---
 
 *Built to document my work, learning, and growth in software development, data analytics, and AI.*
+
