@@ -1,7 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — MODE ENGINE (COLOUR / NOIR WITH FLASH OVERLAY)
- * Section 14 of master specification.
- */
 
 let isNoir = false;
 let isFlashing = false;
@@ -30,17 +26,15 @@ export function toggleMode() {
 
   isFlashing = true;
 
-  // 1. Flash overlay animates opacity 0 -> 1 in 160ms (fill: forwards)
   const flashIn = flashOverlay.animate(
     [{ opacity: 0 }, { opacity: 1 }],
     { duration: 160, fill: 'forwards' }
   );
 
   flashIn.onfinish = () => {
-    // 2. At full white: toggle body.noir, flip state, switch button label, dispatch event
+
     applyModeToggle(toggleBtn);
 
-    // 3. Flash animates opacity 1 -> 0 over 800ms ease-out
     const flashOut = flashOverlay.animate(
       [{ opacity: 1 }, { opacity: 0 }],
       { duration: 800, easing: 'ease-out', fill: 'forwards' }
@@ -66,7 +60,6 @@ function applyModeToggle(toggleBtn) {
     if (toggleBtn) toggleBtn.textContent = '◐ Color';
   }
 
-  // Dispatch event for canvas hue & saturation adjustments
   window.dispatchEvent(new CustomEvent('filmlab:modechange', { detail: { isNoir } }));
 }
 

@@ -1,9 +1,6 @@
-/**
- * FILM LAB PORTFOLIO — ABOUT OBSERVATORY & CERTIFIED PRINTS
- * Sections 11, 18.0, 18.1, 18.2, 18.4 of master specification.
- */
 
 import { siteData, SKILL_CATEGORIES, SKILL_CATEGORY_MAP } from './data.js';
+import { observeNewContent } from './reveal.js';
 
 let isEditMode = false;
 let portraitObjectUrl = null;
@@ -11,21 +8,14 @@ let uploadedCerts = [];
 let certLightboxEl = null;
 let activeSkillCategory = 'all';
 
-/**
- * Check if edit mode is active via URL query param (?edit) or hash
- */
 export function checkEditMode() {
   const searchParams = new URLSearchParams(window.location.search);
   return searchParams.has('edit') || window.location.hash.includes('edit');
 }
 
-/**
- * Initialize About Page logic and interactions
- */
 export function initAbout() {
   isEditMode = checkEditMode();
 
-  // Watch for popstate or hashchange to update edit mode if user toggles URL
   window.addEventListener('popstate', () => {
     const newEdit = checkEditMode();
     if (newEdit !== isEditMode) {
@@ -42,7 +32,6 @@ export function initAbout() {
     }
   });
 
-  // Listen for page navigation to run reveal animations
   window.addEventListener('filmlab:pagechange', (e) => {
     if (e.detail?.page === 'about') {
       triggerPortraitReveal();
@@ -50,37 +39,27 @@ export function initAbout() {
     }
   });
 
-  // Initial render
   renderAbout();
 
-  // If already on about page at start, trigger animations
   const pageAbout = document.getElementById('page-about');
   if (pageAbout && pageAbout.classList.contains('on')) {
     triggerPortraitReveal();
     animateProficiencyBars();
   }
 
-  // Setup Lightbox modal
   setupCertLightbox();
 }
 
-/**
- * Re-render all About Page subcomponents
- */
 export function renderAbout() {
   renderEditNotice();
   renderPortrait();
-  renderContactSheet();
   renderSkillFilters();
   renderKit();
   renderProficiencyBars();
   renderCertificates();
-  renderAwards();
+  renderBeyondBuild();
 }
 
-/**
- * Render Edit Mode notice banner (§18.0)
- */
 function renderEditNotice() {
   let noticeEl = document.getElementById('about-edit-notice');
   if (!noticeEl) {
@@ -109,18 +88,13 @@ function renderEditNotice() {
   }
 }
 
-/**
- * Render Portrait slot (§18.1)
- */
 function renderPortrait() {
   const frame = document.getElementById('portrait-frame');
   if (!frame) return;
 
-  // Clear existing content
   frame.innerHTML = '';
   frame.className = 'portrait-frame' + (isEditMode ? ' is-edit' : '');
 
-  // Accessibility & lens cursor
   if (isEditMode) {
     frame.setAttribute('data-c', 'Upload');
     frame.setAttribute('tabindex', '0');
@@ -133,13 +107,11 @@ function renderPortrait() {
     frame.removeAttribute('aria-label');
   }
 
-  // Slate tag (§18.1)
   const slateTag = document.createElement('div');
   slateTag.className = 'portrait-slate-tag';
   slateTag.textContent = 'TAKE 01 — SLATE';
   frame.appendChild(slateTag);
 
-  // Hidden file input for edit mode
   if (isEditMode) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -159,7 +131,6 @@ function renderPortrait() {
 
   const currentSrc = portraitObjectUrl || siteData.portrait?.src;
 
-  // Placeholder container
   const placeholder = document.createElement('div');
   placeholder.className = 'portrait-placeholder';
   placeholder.innerHTML = `
@@ -194,9 +165,6 @@ function renderPortrait() {
   }
 }
 
-/**
- * Handle portrait file upload preview in edit mode (§18.0, §18.1)
- */
 function handlePortraitUpload(e) {
   const file = e.target.files?.[0];
   if (!file) return;
@@ -207,7 +175,6 @@ function handlePortraitUpload(e) {
     return;
   }
 
-  // Revoke previous object URL if any
   if (portraitObjectUrl) {
     URL.revokeObjectURL(portraitObjectUrl);
     portraitObjectUrl = null;
@@ -217,11 +184,6 @@ function handlePortraitUpload(e) {
   renderPortrait();
 }
 
-/**
- * Portrait reveal animation: top-to-bottom clip reveal (§18.1)
- * "every time the About page becomes visible, the frame reveals from top to bottom
- * with clip-path: inset(0 0 100% 0) -> full over 1.3s cubic-bezier(.16,1,.3,1)"
- */
 export function triggerPortraitReveal() {
   const frame = document.getElementById('portrait-frame');
   if (!frame) return;
@@ -245,14 +207,6 @@ export function triggerPortraitReveal() {
   );
 }
 
-/**
- * Render Contact Sheet 2x2 grid (§11.1)
- * "a 2x2 grid inside a #020d0f panel (padding 16px, radius 6px, gap 10px),
- * caption text spanning both columns (11px, letter-spacing .1em, mute).
- * Each tile: aspect-ratio 3/4, radius 3px, image or gradient, filter:grayscale(.8) contrast(1.1).
- * Hover: colour returns and the tile scales to 1.04 and rises above the others (.6s cubic-bezier(.16,1,.3,1)).
- * Every second tile has margin-top:30px for a staggered look."
- */
 function renderContactSheet() {
   const panel = document.querySelector('.contact-sheet-panel');
   if (!panel) return;
@@ -271,10 +225,6 @@ function renderContactSheet() {
   `;
 }
 
-/**
- * Render Skill Category Filters (Feature A)
- * Categories: ALL, LANGUAGES, FRONTEND, BACKEND, DATABASES & TOOLS, ANALYTICS, ML & VISION
- */
 function renderSkillFilters() {
   const nav = document.getElementById('skill-filters-nav');
   if (!nav || !SKILL_CATEGORIES) return;
@@ -282,8 +232,8 @@ function renderSkillFilters() {
   nav.innerHTML = SKILL_CATEGORIES.map(cat => {
     const isSelected = cat.id === activeSkillCategory;
     return `
-      <button type="button" 
-              class="skill-filter-btn ${isSelected ? 'active' : ''}" 
+      <button type="button"
+              class="skill-filter-btn ${isSelected ? 'active' : ''}"
               data-cat="${cat.id}"
               aria-pressed="${isSelected ? 'true' : 'false'}"
               data-c="Filter">
@@ -298,7 +248,6 @@ function renderSkillFilters() {
       if (catId === activeSkillCategory) return;
       activeSkillCategory = catId;
 
-      // Update button visual and aria states
       nav.querySelectorAll('.skill-filter-btn').forEach(b => {
         const active = b.getAttribute('data-cat') === activeSkillCategory;
         b.classList.toggle('active', active);
@@ -310,11 +259,6 @@ function renderSkillFilters() {
   });
 }
 
-/**
- * Render Technical Kit (Skills chips) (§11.2)
- * When ALL is selected, display all original groups.
- * When a specific category is selected, display only matching skills without empty headings or duplicate chips.
- */
 function renderKit() {
   const kitContainer = document.getElementById('kit-grid');
   if (!kitContainer || !siteData.about.kit) return;
@@ -332,7 +276,6 @@ function renderKit() {
     const activeCatObj = SKILL_CATEGORIES.find(c => c.id === activeSkillCategory);
     const categoryTitle = activeCatObj ? activeCatObj.label : 'FILTERED';
 
-    // Collect matching chips across groups without duplicates
     const matchedChips = [];
     siteData.about.kit.forEach(kg => {
       kg.chips.forEach(chip => {
@@ -354,11 +297,6 @@ function renderKit() {
   }
 }
 
-/**
- * Render Proficiency Bars (§11.3)
- * "stack (gap 22px, max-width 760px, margin-top 12vh). Row grid 140px 1fr 44px, gap 16px: label, bar, value.
- * The bar is a 2px --line track with a 4px amber fill (width = value%, box-shadow:0 0 14px amber)."
- */
 function renderProficiencyBars() {
   const barsContainer = document.getElementById('proficiency-bars');
   if (!barsContainer || !siteData.about.bars) return;
@@ -374,10 +312,6 @@ function renderProficiencyBars() {
   `).join('');
 }
 
-/**
- * Animate Proficiency Bars (§11.3)
- * "The fill runs a 1.6s cubic-bezier(.16,1,.3,1) width 0 -> value animation each time the About page becomes visible."
- */
 export function animateProficiencyBars() {
   const fills = document.querySelectorAll('#proficiency-bars .bar-fill');
   if (!fills.length) return;
@@ -408,10 +342,6 @@ export function animateProficiencyBars() {
   });
 }
 
-/**
- * Render Certified Prints Gallery (§18.2)
- * Film-print cards, aspect-ratio 4/3, PDF badge, hover tilt, lightbox trigger, edit-mode upload tile.
- */
 function renderCertificates() {
   const certContainer = document.getElementById('certificates-grid');
   if (!certContainer) return;
@@ -422,19 +352,20 @@ function renderCertificates() {
 
   allCerts.forEach((cert, index) => {
     const card = document.createElement('div');
-    card.className = 'certificate-card' + (cert.type === 'pdf' ? ' cert-pdf' : ' cert-image');
+    const delayClass = `reveal-delay-${(index % 4) + 1}`;
+    card.className = `certificate-card reveal-init ${delayClass}` + (cert.type === 'pdf' ? ' cert-pdf' : ' cert-image');
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
     card.setAttribute('data-c', 'View');
     card.setAttribute('aria-label', `View ${cert.title} certificate`);
 
-    if (cert.type === 'image' && cert.file) {
-      card.style.background = `linear-gradient(rgba(2, 13, 15, 0.45), rgba(2, 13, 15, 0.85)), url('${cert.file}') center/cover no-repeat`;
+    const bgImage = (cert.type === 'image' && cert.file) ? cert.file : (cert.thumbnail || null);
+    if (bgImage) {
+      card.style.background = `linear-gradient(rgba(2, 13, 15, 0.45), rgba(2, 13, 15, 0.85)), url('${bgImage}') center/cover no-repeat`;
     } else {
       card.style.background = cert.gradient || 'linear-gradient(145deg, #10212e, #1b2d2f)';
     }
 
-    // Inner card markup
     let badgeHtml = '';
     if (cert.type === 'pdf') {
       badgeHtml = `<span class="cert-badge-pdf">PDF</span>`;
@@ -456,7 +387,6 @@ function renderCertificates() {
       </div>
     `;
 
-    // Click & Keyboard action
     card.addEventListener('click', (e) => {
       if (e.target.closest('.cert-remove-btn')) return;
       openCertificate(cert);
@@ -473,7 +403,6 @@ function renderCertificates() {
     certContainer.appendChild(card);
   });
 
-  // Edit Mode Upload Tile (§18.2)
   if (isEditMode) {
     const uploadTile = document.createElement('label');
     uploadTile.className = 'certificate-upload-tile';
@@ -502,7 +431,6 @@ function renderCertificates() {
     certContainer.appendChild(uploadTile);
   }
 
-  // Attach event delegation for remove buttons
   certContainer.querySelectorAll('.cert-remove-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -510,18 +438,14 @@ function renderCertificates() {
       removeUploadedCert(id);
     });
   });
+
+  observeNewContent(certContainer);
 }
 
-/**
- * Open Certificate in Lightbox (for images/placeholders) or embed PDF directly (§18.2)
- */
 function openCertificate(cert) {
   showCertLightbox(cert);
 }
 
-/**
- * Handle certificate upload in edit mode (§18.0, §18.2)
- */
 function handleCertificatesUpload(e) {
   const files = Array.from(e.target.files || []);
   if (!files.length) return;
@@ -551,9 +475,6 @@ function handleCertificatesUpload(e) {
   renderCertificates();
 }
 
-/**
- * Remove an uploaded certificate preview and revoke its object URL
- */
 function removeUploadedCert(id) {
   const idx = uploadedCerts.findIndex(c => c.id === id);
   if (idx !== -1) {
@@ -566,9 +487,6 @@ function removeUploadedCert(id) {
   }
 }
 
-/**
- * Setup Lightbox modal DOM & controls (§18.2)
- */
 function setupCertLightbox() {
   certLightboxEl = document.getElementById('cert-lightbox');
   if (!certLightboxEl) {
@@ -583,7 +501,7 @@ function setupCertLightbox() {
   }
 
   certLightboxEl.addEventListener('click', (e) => {
-    // Clicking anywhere closes it, unless interacting with actions or embed
+
     if (e.target.closest('.cert-lightbox-actions') || e.target.closest('iframe')) return;
     closeCertLightbox();
   });
@@ -638,9 +556,17 @@ function showCertLightbox(cert) {
   if (cert.type === 'image' && cert.file) {
     mediaHtml = `<img src="${cert.file}" alt="${cert.title}" class="cert-lightbox-img" />`;
   } else if (cert.type === 'pdf' && cert.file) {
-    mediaHtml = `
-      <iframe src="${cert.file}#toolbar=0" title="${cert.title}" class="cert-lightbox-embed" style="width: 100%; height: 100%; border: none; border-radius: 4px; background: #ffffff;"></iframe>
-    `;
+    if (cert.thumbnail) {
+      mediaHtml = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #0b181c;">
+          <img src="${cert.thumbnail}" alt="${cert.title}" class="cert-lightbox-img" style="max-height: 100%; width: auto; object-fit: contain;" />
+        </div>
+      `;
+    } else {
+      mediaHtml = `
+        <iframe src="${cert.file}#toolbar=0" title="${cert.title}" class="cert-lightbox-embed" style="width: 100%; height: 100%; border: none; border-radius: 4px; background: #ffffff;"></iframe>
+      `;
+    }
   } else {
     mediaHtml = `
       <div class="cert-lightbox-placeholder">
@@ -701,24 +627,61 @@ function closeCertLightbox() {
   }
 }
 
-/**
- * Render Hall of frames (Awards) (§11.4)
- * "h2 with margin 14vh top / 5vh bottom, then an unstyled list.
- * Each row: grid 70px 1fr auto, gap 16px, padding 20px 0, border-top:1px solid --line;
- * year in Fraunces italic 20px amber; title; right-aligned small mute detail.
- * Hover: background linear-gradient(90deg, rgba(255,178,74,.1), transparent) and padding-left 16px (.4s)."
- */
-function renderAwards() {
-  const awardsContainer = document.getElementById('awards-list');
-  if (!awardsContainer || !siteData.about.awards) return;
+function renderBeyondBuild() {
+  const container = document.getElementById('beyond-build-list') || document.getElementById('awards-list');
+  const reflections = siteData.about?.reflections || [];
+  if (!container || !reflections.length) return;
 
-  awardsContainer.innerHTML = siteData.about.awards.map(a => `
-    <div class="award-row">
-      <div class="award-year">${a.year}</div>
-      <div class="award-body">
-        <div class="award-title">${a.title}</div>
-      </div>
-      <div class="award-detail">${a.detail}</div>
-    </div>
-  `).join('');
+  const [r1, r2, r3] = reflections;
+
+  container.innerHTML = `
+    <!-- REFLECTION 01 — THE CURIOSITY -->
+    ${r1 ? `
+      <article class="reflection-chapter chapter-prominent reveal-init reveal-delay-1">
+        <div class="chapter-header">
+          <span class="chapter-num">${r1.num}</span>
+          <span class="chapter-dot" aria-hidden="true">·</span>
+          <span class="chapter-label">${r1.label}</span>
+        </div>
+        <h3 class="chapter-heading">${r1.heading}</h3>
+        <p class="chapter-body">${r1.body}</p>
+      </article>
+    ` : ''}
+
+    <!-- REFLECTION 02 — THE CONNECTIONS -->
+    ${r2 ? `
+      <article class="reflection-chapter chapter-split reveal-init reveal-delay-2">
+        <div class="chapter-split-col chapter-split-left">
+          <div class="chapter-header">
+            <span class="chapter-num">${r2.num}</span>
+            <span class="chapter-dot" aria-hidden="true">·</span>
+            <span class="chapter-label">${r2.label}</span>
+          </div>
+          <h3 class="chapter-heading">${r2.heading}</h3>
+        </div>
+        <div class="chapter-split-col chapter-split-right">
+          <p class="chapter-body chapter-body-accent">${r2.body}</p>
+        </div>
+      </article>
+    ` : ''}
+
+    <!-- REFLECTION 03 — THE UNFINISHED PART -->
+    ${r3 ? `
+      <article class="reflection-chapter chapter-frame reveal-init reveal-delay-3">
+        <div class="chapter-frame-inner">
+          <div class="chapter-header">
+            <span class="chapter-num">${r3.num}</span>
+            <span class="chapter-dot" aria-hidden="true">·</span>
+            <span class="chapter-label">${r3.label}</span>
+          </div>
+          <h3 class="chapter-heading chapter-heading-italic">${r3.heading}</h3>
+          <p class="chapter-body">${r3.body}</p>
+        </div>
+      </article>
+    ` : ''}
+  `;
+
+  observeNewContent(container);
 }
+
+const renderAwards = renderBeyondBuild;

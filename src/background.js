@@ -1,7 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — 2D BOKEH BACKGROUND
- * Section 6 of master specification.
- */
 
 import { getActivePage } from './router.js';
 import { isNoirMode } from './mode.js';
@@ -34,12 +30,12 @@ function createOrbs(count) {
     list.push({
       x: Math.random(),
       y: Math.random(),
-      r: 40 + Math.random() * 130, // 40–170px
-      alpha: 0.05 + Math.random() * 0.10, // 0.05–0.15
-      vx: (Math.random() - 0.5) * 0.00006, // approx ±0.00003
+      r: 40 + Math.random() * 130,
+      alpha: 0.05 + Math.random() * 0.10,
+      vx: (Math.random() - 0.5) * 0.00006,
       vy: (Math.random() - 0.5) * 0.00006,
       k: i % 2,
-      z: 0.2 + Math.random() * 1.0, // 0.2–1.2
+      z: 0.2 + Math.random() * 1.0,
     });
   }
   return list;
@@ -81,18 +77,15 @@ export function initBackground() {
     { passive: true }
   );
 
-  // Set initial page hues
   const initialPage = getActivePage() || 'home';
   setBokehPage(initialPage);
 
-  // Listen to router page changes
   window.addEventListener('filmlab:pagechange', (e) => {
     if (e.detail?.page) {
       setBokehPage(e.detail.page);
     }
   });
 
-  // Listen to mode changes
   window.addEventListener('filmlab:modechange', (e) => {
     const isNoir = e.detail?.isNoir ?? isNoirMode();
     targetS = isNoir ? 0 : 85;
@@ -130,13 +123,11 @@ function drawFrame() {
   if (!canvas || !ctx) return;
   const w = canvas.width;
   const h = canvas.height;
-  if (!w || !h) return; // Zero-size guard
+  if (!w || !h) return;
 
-  // Interpolate hues toward targets at 0.03/frame
   currentH0 += (targetH0 - currentH0) * 0.03;
   currentH1 += (targetH1 - currentH1) * 0.03;
 
-  // Interpolate saturation toward target at 0.05/frame
   currentS += (targetS - currentS) * 0.05;
 
   ctx.clearRect(0, 0, w, h);
@@ -145,11 +136,9 @@ function drawFrame() {
   for (let i = 0; i < orbs.length; i++) {
     const orb = orbs[i];
 
-    // Drift velocity
     orb.x = (orb.x + orb.vx + 1) % 1;
     orb.y = (orb.y + orb.vy + 1) % 1;
 
-    // Parallax offset: X = x*W + (mouseX/W - .5)*-90*z
     const px = orb.x * w + (mouseX / w - 0.5) * -90 * orb.z;
     const py = orb.y * h + (mouseY / h - 0.5) * -90 * orb.z;
 

@@ -26,7 +26,7 @@ export function getCleanPageFromHash(rawHash) {
 }
 
 export function initRouter() {
-  // Bind all elements with data-go
+
   document.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-go]');
     if (!trigger) return;
@@ -39,7 +39,7 @@ export function initRouter() {
         originX = e.clientX;
         originY = e.clientY;
       } else {
-        // Keyboard activation: expand from center of the activated button
+
         const rect = trigger.getBoundingClientRect();
         originX = rect.left + rect.width / 2;
         originY = rect.top + rect.height / 2;
@@ -48,11 +48,9 @@ export function initRouter() {
     }
   });
 
-  // Check URL hash on initial load (handles /#about, /#work/agriscan, etc.)
   const { route } = parseRoute(window.location.hash);
   navigateTo(route, false, window.innerWidth / 2, window.innerHeight / 2, true);
 
-  // Support browser forward/back
   window.addEventListener('popstate', () => {
     const { route } = parseRoute(window.location.hash);
     navigateTo(route, false, window.innerWidth / 2, window.innerHeight / 2);
@@ -64,7 +62,6 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
 
   const { page, slug, route } = parseRoute(targetRoute.startsWith('#') ? targetRoute : '#' + targetRoute);
 
-  // Find project if slug is present
   let project = null;
   if (slug && siteData.projects) {
     project = siteData.projects.find((p) => p.id === slug || p.caseStudy?.slug === slug);
@@ -72,7 +69,6 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
   const effectiveSlug = project ? (project.caseStudy?.slug || project.id) : null;
   const effectiveRoute = effectiveSlug ? `${page}/${effectiveSlug}` : page;
 
-  // If already on this exact route and page is active, do not re-navigate
   if (effectiveRoute === activeRoute && document.getElementById('page-' + page)?.classList.contains('on')) {
     return;
   }
@@ -81,7 +77,6 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
   const irisKicker = document.getElementById('iris-kicker');
   const irisTitle = document.getElementById('iris-title');
 
-  // Initial load does not play the full iris wipe
   if (isInitial || !irisOverlay || typeof irisOverlay.animate !== 'function') {
     switchActivePage(page, effectiveSlug);
     if (updateHistory) {
@@ -105,11 +100,9 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
   const holdDuration = prefersReducedMotion ? 1 : 650;
   const closeDuration = prefersReducedMotion ? 1 : 800;
 
-  // Origin point
   const x = originX !== null && originX !== undefined ? originX : window.innerWidth / 2;
   const y = originY !== null && originY !== undefined ? originY : window.innerHeight / 2;
 
-  // Set scene kicker and title
   let sceneKicker = SCENES[page]?.kicker || 'SCENE 01';
   let sceneTitle = SCENES[page]?.title || 'The Reel';
   if (page === 'work' && project) {
@@ -123,7 +116,6 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
   isTransitioning = true;
   irisOverlay.classList.add('busy');
 
-  // Step 4: Open circular clip-path from circle(0px at X Y) to circle(150vmax at X Y)
   const openAnim = irisOverlay.animate(
     [
       { clipPath: `circle(0px at ${x}px ${y}px)` },
@@ -137,7 +129,7 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
   );
 
   openAnim.onfinish = () => {
-    // Step 5: While fully covered, swap page, scroll to top, update active nav & dispatch events
+
     switchActivePage(page, effectiveSlug);
     if (updateHistory) {
       const isEdit = window.location.search.includes('edit') || window.location.hash.includes('edit');
@@ -151,18 +143,15 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
     }
     window.scrollTo(0, 0);
 
-    // Dispatch filmlab:pagechange for bokeh hues, gyro coordinates, reel, and case study
     window.dispatchEvent(
       new CustomEvent('filmlab:pagechange', { detail: { page, slug: effectiveSlug, route: effectiveRoute } })
     );
 
-    // Step 6: Title reveal with class 't'
     irisOverlay.classList.add('t');
 
     setTimeout(() => {
       irisOverlay.classList.remove('t');
 
-      // Step 7: Close transition: animate clip-path from circle(150vmax at 50% 50%) to circle(0px at 50% 50%)
       const closeAnim = irisOverlay.animate(
         [
           { clipPath: 'circle(150vmax at 50% 50%)' },
@@ -182,7 +171,8 @@ export function navigateTo(targetRoute, updateHistory = true, originX = null, or
         irisOverlay.classList.remove('busy');
         isTransitioning = false;
 
-        // If journey, trigger timeline check/update
+        window.dispatchEvent(new CustomEvent('filmlab:transitioncomplete', { detail: { page, slug: effectiveSlug } }));
+
         if (page === 'journey') {
           window.dispatchEvent(new CustomEvent('filmlab:timelineupdate'));
         }
@@ -204,7 +194,6 @@ function switchActivePage(targetPage, targetSlug = null) {
     }
   });
 
-  // Toggle work-overview vs work-case-study
   const workOverview = document.getElementById('work-overview');
   const workCaseStudy = document.getElementById('work-case-study');
   if (targetPage === 'work') {
@@ -216,12 +205,11 @@ function switchActivePage(targetPage, targetSlug = null) {
       if (workCaseStudy) workCaseStudy.style.display = 'none';
     }
   } else {
-    // When leaving work, keep work-overview ready
+
     if (workOverview) workOverview.style.display = 'block';
     if (workCaseStudy) workCaseStudy.style.display = 'none';
   }
 
-  // Update nav current state
   document.querySelectorAll('.nav-btn').forEach((btn) => {
     if (btn.getAttribute('data-go') === targetPage) {
       btn.setAttribute('aria-current', 'page');

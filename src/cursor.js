@@ -1,7 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — CUSTOM LENS CURSOR
- * Section 8 of master specification.
- */
 
 let lensEl = null;
 let dotEl = null;
@@ -28,7 +24,6 @@ export function initCursor() {
 
   if (!lensEl || !dotEl) return;
 
-  // Track pointer movements
   window.addEventListener(
     'pointermove',
     (e) => {
@@ -43,10 +38,8 @@ export function initCursor() {
         dotEl.classList.add('visible');
       }
 
-      // Update dot immediately (no lag)
       dotEl.style.transform = `translate(${mouseX - 2.5}px, ${mouseY - 2.5}px)`;
 
-      // Check for hover label via data-c attribute
       const targetWithLabel = e.target.closest('[data-c]');
       if (targetWithLabel) {
         const labelText = targetWithLabel.getAttribute('data-c');
@@ -59,7 +52,6 @@ export function initCursor() {
         clearLabel();
       }
 
-      // Magnetic email link effect (Section 13)
       const emailEl = document.getElementById('footer-email');
       if (emailEl) {
         const rect = emailEl.getBoundingClientRect();
@@ -78,7 +70,6 @@ export function initCursor() {
     { passive: true }
   );
 
-  // Handle pointer leaving the window
   document.addEventListener('pointerleave', () => {
     isVisible = false;
     lensEl.classList.remove('visible');
@@ -96,7 +87,7 @@ export function initCursor() {
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) {
-    // Under reduced motion, follow directly without continuous lerp loop
+
     window.addEventListener(
       'pointermove',
       () => {
@@ -130,7 +121,7 @@ function startCursorLoop() {
 
   function loop() {
     if (isVisible) {
-      // Lerp 0.22 per frame toward pointer
+
       ringX += (mouseX - ringX) * 0.22;
       ringY += (mouseY - ringY) * 0.22;
       lensEl.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;

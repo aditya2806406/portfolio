@@ -6,33 +6,51 @@
   <meta name="color-scheme" content="dark">
   <meta name="description" content="Aditya Prakash — Cinematic Film Lab Portfolio. Full-Stack Developer, Data Analytics, and Machine Learning.">
   <title>Aditya Prakash — Cinematic Film Lab Portfolio</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="./src/styles/main.css">
 </head>
 <body>
-  <!-- PERSISTENT GLOBAL LAYERS (Z-INDEX STACK) -->
+
   <canvas id="bokeh-canvas" class="bokeh-layer" aria-hidden="true"></canvas>
   <canvas id="gyro-canvas" class="gyro-layer" aria-hidden="true"></canvas>
   <div id="grain" class="grain-layer" aria-hidden="true"></div>
   <div id="progress-bar" class="progress-bar" aria-hidden="true"></div>
   <div id="frame-counter" class="frame-counter" aria-hidden="true">FRAME 0001 / 0480</div>
 
-  <!-- FLOATING POSTER PREVIEW (Z15) -->
+  <div id="leak" class="light-leak" aria-hidden="true"></div>
+  <div class="rail l" aria-hidden="true"></div>
+  <div class="rail r" aria-hidden="true"></div>
+  <div class="bx t" aria-hidden="true"></div>
+  <div class="bx b" aria-hidden="true"></div>
+  <div id="rec" class="rec-indicator" role="region" aria-label="Recording indicator">
+    <span class="rec-dot" aria-hidden="true"></span>
+    <span class="rec-label">REC</span>
+    <span class="rec-time" id="rec-time">00:00:00:00</span>
+    <button type="button" class="rec-letterbox-btn" id="btn-letterbox" aria-pressed="false" data-c="Cinema">LETTERBOX</button>
+  </div>
+  <div id="vf" class="viewfinder-overlay" aria-hidden="true">
+    <div class="vf-corner vf-tl"></div>
+    <div class="vf-corner vf-tr"></div>
+    <div class="vf-corner vf-bl"></div>
+    <div class="vf-corner vf-br"></div>
+    <span class="vf-label">AF ●</span>
+  </div>
+  <div id="flare" class="anamorphic-flare" aria-hidden="true"></div>
+  <canvas id="lp" class="light-trail-canvas" aria-hidden="true"></canvas>
+
   <div id="floating-preview" class="floating-preview" aria-hidden="true">
     <div class="floating-preview-title" id="floating-preview-title"></div>
   </div>
 
-  <!-- CUSTOM LENS CURSOR (Z60, Z61) -->
   <div id="lens-cursor" class="lens-cursor" aria-hidden="true">
     <span id="lens-label" class="lens-label"></span>
   </div>
   <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
 
-  <!-- OVERLAYS (FLASH, IRIS, LOADER) -->
   <div id="flash-overlay" class="flash-overlay" aria-hidden="true"></div>
-  
+
   <div id="iris-overlay" class="iris-overlay" aria-hidden="true">
     <div class="iris-content">
       <span class="iris-kicker" id="iris-kicker">SCENE 01</span>
@@ -52,7 +70,6 @@
 
   <div id="cert-lightbox" class="cert-lightbox" role="dialog" aria-modal="true" aria-label="Certificate Lightbox" hidden></div>
 
-  <!-- FIXED HEADER & NAVIGATION (Z20) -->
   <header class="site-header" role="banner">
     <button class="logo-btn" data-go="home" aria-label="Go to Home / The Reel" data-c="Home">AP</button>
     <nav class="site-nav" role="navigation" aria-label="Primary navigation">
@@ -64,42 +81,35 @@
     </nav>
   </header>
 
-  <!-- MAIN VIEW CONTAINER (4 PAGES TOGGLED BY CLASS) -->
   <main class="page-container" id="main-content">
-    
-    <!-- PAGE 1: HOME — THE REEL -->
+
     <section id="page-home" class="page on" data-page="home">
       <div class="wrap">
         <div class="hero-section">
           <h1 class="hero-name" id="hero-name">Aditya Prakash</h1>
-          
+
           <div class="role-line-wrap">
             <div class="role-bar"></div>
-            <div class="role-text" id="role-text">Full-Stack Developer · Data Analytics · Machine Learning</div>
+            <div class="role-text" id="role-text">Full-Stack Developer · Data Analytics · AI & Software Development</div>
           </div>
 
-          <div class="flashlight-container" id="flashlight-container">
+          <div class="flashlight-container reveal-init" id="flashlight-container">
             <div class="flashlight-base" id="flashlight-base">
               Engineering resilient systems at the intersection of full-stack architecture, machine learning models, and data analytics.
             </div>
             <div class="flashlight-bright" id="flashlight-bright" aria-hidden="true">
               Engineering resilient systems at the intersection of <em>full-stack architecture</em>, <em>machine learning models</em>, and data analytics.
             </div>
-            <div class="flashlight-hint">MOVE YOUR CURSOR OVER THE SENTENCE</div>
           </div>
         </div>
       </div>
 
-      <!-- MARQUEE STRIP -->
-      <div class="marquee-strip">
+      <div class="marquee-strip reveal-init">
         <div class="marquee-content" id="marquee-inner"></div>
       </div>
 
-      <!-- STATS GRID & NOW SHOWING FILMSTRIP -->
       <div class="wrap">
-        <div class="stats-grid" id="stats-grid"></div>
-
-        <div style="margin-top: 4vh; margin-bottom: 12vh;">
+        <div class="now-showing-section reveal-init" style="margin-top: 8vh; margin-bottom: 12vh;">
           <span class="kicker">PREVIEW REEL</span>
           <h2>Now <em>showing</em></h2>
           <p class="sub" style="margin-top: 1.5vh;">Interactive snapshots from flagship engineering case studies.</p>
@@ -108,103 +118,98 @@
       </div>
     </section>
 
-    <!-- PAGE 2: WORK — SELECTED SCENES -->
     <section id="page-work" class="page" data-page="work">
-      <!-- WORK OVERVIEW (3D REEL & PROJECT SHOWCASE) -->
+
       <div id="work-overview" class="work-view">
         <div class="wrap">
-          <span class="kicker">PORTFOLIO REEL</span>
-          <h2>Selected <em>scenes</em></h2>
-          <p class="sub" style="margin-top: 1.5vh;">
-            Drag to spin the 3D drum reel or explore detailed architectural case studies below.
-          </p>
+          <div class="work-header reveal-init">
+            <span class="kicker">PORTFOLIO REEL</span>
+            <h2>Selected <em>scenes</em></h2>
+            <p class="sub" style="margin-top: 1.5vh;">
+              Drag to spin the 3D drum reel or explore detailed architectural case studies below.
+            </p>
+          </div>
 
-          <!-- PROJECT CATEGORY FILTERS -->
-          <nav class="project-filters-nav" id="project-filters-nav" aria-label="Filter projects by engineering discipline"></nav>
+          <nav class="project-filters-nav reveal-init" id="project-filters-nav" aria-label="Filter projects by engineering discipline"></nav>
 
-          <!-- 3D REEL CONTAINER (§10.1) -->
-          <div class="reel-container" id="reel-container" tabindex="0" role="group" aria-label="3D Project Drum Reel" data-c="Drag">
+          <div class="reel-container reveal-init" id="reel-container" tabindex="0" role="group" aria-label="3D Project Drum Reel" data-c="Drag">
             <div class="reel-drum" id="reel-drum"></div>
           </div>
-          <div class="reel-caption" id="reel-caption" aria-live="polite"></div>
+          <div class="reel-caption reveal-init" id="reel-caption" aria-live="polite"></div>
 
-          <!-- PROJECT SHOWCASE CARDS (§10.2) -->
-          <div class="project-accordion" id="project-accordion"></div>
+          <div class="project-accordion reveal-init" id="project-accordion"></div>
         </div>
       </div>
 
-      <!-- DEDICATED CASE STUDY SCENE -->
       <div id="work-case-study" class="work-view" style="display: none;">
         <div class="wrap" id="case-study-container" tabindex="-1"></div>
       </div>
     </section>
 
-    <!-- PAGE 3: ABOUT — DIRECTOR'S NOTES -->
     <section id="page-about" class="page" data-page="about">
       <div class="wrap">
         <div id="about-edit-notice" class="about-edit-notice"></div>
-        <div class="about-grid">
-          <!-- LEFT COLUMN: PORTRAIT & CONTACT SHEET -->
-          <div>
+        <div class="about-grid reveal-init">
+
+          <div class="reveal-init">
             <div class="portrait-frame" id="portrait-frame"></div>
-            <div class="contact-sheet-panel"></div>
           </div>
 
-          <!-- RIGHT COLUMN: PHILOSOPHY -->
-          <div>
+          <div class="reveal-init">
             <span class="kicker">ENGINEERING PHILOSOPHY</span>
             <h2>Director's <em>notes</em></h2>
             <p class="sub" style="font-size: 19px; line-height: 1.5; color: var(--ink); margin-top: 3vh; margin-bottom: 2vh;">
-              Engineering software architectures and analytical systems with mathematical precision and cinematic care.
+              I'm drawn to the space between an idea and what it can become.
             </p>
-            <p class="sub">
-              Aditya Prakash is a computer science undergraduate specializing in Data Analytics at VIT-AP University (2024–2028). His focus spans full-stack web applications, machine learning architectures, and low-latency security layers for autonomous agents.
+            <p class="sub" style="margin-bottom: 1.5rem;">
+              I'm Aditya Prakash, a computer science student exploring the intersection of software development, data analytics, and AI. What began with building projects has grown into a curiosity about how different disciplines can come together to solve problems.
+            </p>
+            <p class="sub" style="margin-bottom: 1.5rem;">
+              I enjoy the process of turning concepts into working systems, asking questions of data, and exploring what intelligent technologies can make possible. I'm still discovering where these interests will lead me—and that's part of what makes the journey exciting.
+            </p>
+            <p class="sub" style="color: var(--amber); font-style: italic; margin-top: 2vh;">
+              Not defined by one discipline. Driven by the possibilities between them.
             </p>
           </div>
         </div>
 
-        <!-- TECHNICAL KIT -->
-        <div class="kit-section">
+        <div class="kit-section reveal-init">
           <span class="kicker">TECHNICAL ARSENAL</span>
           <h2>The <em>kit</em></h2>
           <div class="skill-filters-nav" id="skill-filters-nav" role="toolbar" aria-label="Skill category filters"></div>
           <div class="kit-grid" id="kit-grid"></div>
         </div>
 
-        <!-- PROFICIENCY BARS -->
-        <div class="proficiency-section">
+        <div class="proficiency-section reveal-init">
           <span class="kicker">CORE COMPETENCIES</span>
           <h2 style="font-size: clamp(32px, 5vw, 64px); margin-bottom: 4vh;">Proficiency <em>calibrations</em></h2>
           <div id="proficiency-bars"></div>
         </div>
 
-        <!-- CERTIFIED PRINTS GALLERY (SECTION 18.2) -->
-        <div style="margin-top: 14vh;">
+        <div class="certificates-section reveal-init" style="margin-top: 14vh;">
           <span class="kicker">VERIFIED CREDENTIALS</span>
           <h2>Certified <em>prints</em></h2>
           <p class="sub" style="margin-top: 1.5vh;">Completed professional certifications and distributed systems credentials.</p>
           <div class="certificates-grid" id="certificates-grid"></div>
         </div>
 
-        <!-- HALL OF FRAMES (AWARDS) -->
-        <div class="awards-section">
-          <span class="kicker">MILESTONES & HONORS</span>
-          <h2>Hall of <em>frames</em></h2>
-          <div id="awards-list" style="margin-top: 4vh;"></div>
+        <div class="beyond-build-section awards-section reveal-init">
+          <span class="kicker">A DIFFERENT SIDE OF THE STORY</span>
+          <h2>Beyond the <em>build</em></h2>
+          <p class="sub beyond-sub" style="margin-top: 1.5vh;">Not a list of things I've made. A glimpse of how I see the process of making them.</p>
+          <div id="beyond-build-list" class="beyond-build-list" style="margin-top: 6vh;"></div>
         </div>
 
-        <!-- ABOUT CONNECT SECTION (§13 REIMAGINED) -->
-        <div class="about-connect-section" id="about-connect">
+        <div class="about-connect-section reveal-init" id="about-connect">
           <span class="kicker">GET IN TOUCH</span>
           <h2 class="connect-title">Want to <em>connect?</em></h2>
           <p class="sub connect-sub">
             Find me across the digital realm or dispatch a message directly. Always open to discussing resilient full-stack systems, machine learning architectures, and data engineering.
           </p>
 
-          <!-- CONNECT CARDS GRID -->
-          <div class="connect-cards-grid">
-            <!-- EMAIL CARD -->
-            <a href="mailto:prakashaditya2806@gmail.com" class="connect-card" data-c="Send" target="_blank" rel="noopener noreferrer">
+          <div class="connect-cards-grid reveal-init">
+
+            <a href="mailto:prakashaditya2806@gmail.com" class="connect-card reveal-init reveal-delay-1" data-c="Send" target="_blank" rel="noopener noreferrer">
               <div class="connect-card-icon-wrap email-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2"></rect>
@@ -218,8 +223,7 @@
               <div class="connect-card-arrow" aria-hidden="true">↗</div>
             </a>
 
-            <!-- GITHUB CARD -->
-            <a href="https://github.com/aditya2806406" class="connect-card" data-c="Visit" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/aditya2806406" class="connect-card reveal-init reveal-delay-2" data-c="Visit" target="_blank" rel="noopener noreferrer">
               <div class="connect-card-icon-wrap github-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
@@ -233,8 +237,7 @@
               <div class="connect-card-arrow" aria-hidden="true">↗</div>
             </a>
 
-            <!-- LINKEDIN CARD -->
-            <a href="https://www.linkedin.com/in/aditya-prakash-67302a347" class="connect-card" data-c="Connect" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/aditya-prakash-67302a347" class="connect-card reveal-init reveal-delay-3" data-c="Connect" target="_blank" rel="noopener noreferrer">
               <div class="connect-card-icon-wrap linkedin-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
@@ -250,8 +253,7 @@
             </a>
           </div>
 
-          <!-- ACTION BUTTONS -->
-          <div class="connect-actions-row">
+          <div class="connect-actions-row reveal-init">
             <a href="mailto:prakashaditya2806@gmail.com" class="btn-pill btn-primary-accent" data-c="Send" id="footer-email">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                 <rect width="20" height="16" x="2" y="4" rx="2"></rect>
@@ -276,42 +278,34 @@
       </div>
     </section>
 
-    <!-- PAGE 4: JOURNEY — THE LONG TAKE -->
     <section id="page-journey" class="page" data-page="journey">
       <div class="wrap">
-        <div id="journey-edit-notice" class="about-edit-notice" style="display: none;"></div>
-        <span class="kicker">TIMELINE & EVOLUTION</span>
-        <h2>The <em>long take</em></h2>
-        <p class="sub" style="margin-top: 1.5vh;">
-          A chronological trace of technical leadership, competitive hackathons, and software engineering.
-        </p>
+        <div class="journey-header reveal-init">
+          <span class="kicker">THE LONG TAKE · A PERSONAL JOURNEY</span>
+          <h2>Not a straight line. <em>A direction unfolding.</em></h2>
+          <p class="sub" style="margin-top: 1.5vh;">
+            A story about building, exploring, and figuring out what kind of engineer I want to become.
+          </p>
+        </div>
 
-        <!-- VERTICAL TIMELINE -->
-        <div class="timeline-section">
+        <div class="timeline-section reveal-init">
           <div class="timeline-rail"></div>
           <div class="timeline-progress" id="timeline-progress"></div>
           <div id="timeline-entries"></div>
         </div>
 
-        <!-- RÉSUMÉ BLOCK (SECTION 18.3) -->
-        <div class="resume-block" id="resume-block">
-          <div>
-            <span class="kicker">RÉSUMÉ — THE FULL CUT</span>
-            <h3 style="font-size: clamp(26px, 4vw, 44px); margin-top: 8px;">Aditya Prakash Curriculum Vitae</h3>
-            <p class="sub" style="font-size: 13px; margin-top: 6px;">Aditya_Prakash_Resume.pdf · Verified & Updated 2026</p>
-          </div>
-          <div class="resume-actions">
-            <a href="./assets/resume/resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-pill btn-primary-accent" data-c="Open">View PDF ↗</a>
-            <a href="./assets/resume/resume.pdf" download="Aditya_Prakash_Resume.pdf" class="btn-pill" data-c="Save">Download</a>
-            <button type="button" class="btn-pill" style="opacity: 0.6; cursor: default;" title="Edit mode upload active with ?edit">Upload (Edit Mode)</button>
-          </div>
+        <div class="journey-closing reveal-init" style="margin-top: 8vh; padding-top: 6vh; border-top: 1px solid var(--line); max-width: 900px; padding-bottom: 12vh;">
+          <span class="kicker">THE CURRENT FRAME</span>
+          <h2 style="font-size: clamp(28px, 3.5vw, 42px); margin-top: 1vh; margin-bottom: 1.5vh;">The story is still <em>being written.</em></h2>
+          <p class="sub" style="max-width: 680px; font-size: 16px; color: var(--mute); line-height: 1.6;">
+            I'm not presenting a finished destination. I'm documenting the process of finding one.
+          </p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- FAILSAFE INLINE SCRIPT (SECTION 5) -->
   <script>
     setTimeout(function() {
       if (!window.filmlabLoaded) {
@@ -323,7 +317,6 @@
     }, 6500);
   </script>
 
-  <!-- ENTRY MODULE -->
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>

@@ -1,11 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — HOME SHOWCASE ENGINE ("THE REEL")
- * Section 9 of master specification:
- * 9.1 Hero (split-letter entrance, cursor-proximity variable weight, role line, flashlight sentence)
- * 9.2 Marquee strip (scroll-velocity acceleration & skew)
- * 9.3 Stats (scroll-scrubbed counters up and down)
- * 9.4 "Now showing" filmstrip (sprocket rails, 3D tilt, ghost frame numbers, cursor spotlight)
- */
 
 import { siteData } from './data.js';
 import { getActivePage, navigateTo } from './router.js';
@@ -15,10 +7,8 @@ let heroNameEl = null;
 let letterElements = [];
 let flashlightContainer = null;
 let marqueeInner = null;
-let statItems = [];
 let filmstripCards = [];
 
-// Marquee physics state
 let marqueeOffset = 0;
 let scrollVelocity = 0;
 let lastScrollY = 0;
@@ -33,32 +23,15 @@ export function initHome() {
   initHero();
   initFlashlight();
   initMarquee();
-  initStats();
   initFilmstrip();
 
-  // Scroll monitoring for velocity and stats scrubbing
   lastScrollY = window.scrollY || window.pageYOffset || 0;
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onResize, { passive: true });
-  window.addEventListener('filmlab:pagechange', (e) => {
-    if (e.detail && e.detail.page === 'home') {
-      setTimeout(() => {
-        updateStats();
-      }, 50);
-    }
-  });
-
-  // Run initial stats check
-  updateStats();
 }
 
-/**
- * 9.1 HERO ENTRANCE & PROXIMITY TYPOGRAPHY
- */
 function initHero() {
   if (!heroNameEl || !siteData.site.name) return;
 
-  // Split name into letters with staggered transition delay
   const letters = siteData.site.name.split('');
   let letterIndex = 0;
 
@@ -83,8 +56,6 @@ function initHero() {
     roleTextEl.textContent = siteData.site.roleLine;
   }
 
-  // Pointer proximity font weight:
-  // on pointer move, compute distance d to letter center; set font-variation-settings: "wght" round(100 + 800*max(0, 1 - d/260)), 'opsz' 144
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
     window.addEventListener(
@@ -120,15 +91,12 @@ function initHero() {
   }
 }
 
-/**
- * 9.1 FLASHLIGHT SENTENCE
- */
 function initFlashlight() {
   if (!flashlightContainer) return;
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion || !window.matchMedia('(pointer: fine)').matches) {
-    // Show whole sentence on reduced motion or touch
+
     flashlightContainer.style.setProperty('--mx', '50%');
     flashlightContainer.style.setProperty('--my', '50%');
     return;
@@ -152,13 +120,9 @@ function initFlashlight() {
   });
 }
 
-/**
- * 9.2 MARQUEE STRIP
- */
 function initMarquee() {
   if (!marqueeInner || !siteData.marquee) return;
 
-  // 6 words, each followed by an amber ✦, repeated 4 times
   const phrase = siteData.marquee
     .map((w) => `${w} <span class="star" aria-hidden="true">✦</span> `)
     .join('');
@@ -168,7 +132,7 @@ function initMarquee() {
   if (prefersReducedMotion) return;
 
   function loop() {
-    // Animate only if active page is home
+
     if (getActivePage() === 'home') {
       const quarterWidth = marqueeInner.scrollWidth / 4;
 
@@ -180,7 +144,6 @@ function initMarquee() {
       const skew = Math.max(-12, Math.min(12, -scrollVelocity * 0.6));
       marqueeInner.style.transform = `translateX(${marqueeOffset}px) skewX(${skew}deg)`;
 
-      // Decay velocity
       scrollVelocity *= 0.85;
       if (Math.abs(scrollVelocity) < 0.01) {
         scrollVelocity = 0;
@@ -193,73 +156,19 @@ function initMarquee() {
   marqueeAnimId = requestAnimationFrame(loop);
 }
 
-/**
- * 9.3 STATS COUNTERS (SCROLL-SCRUBBED)
- */
-function initStats() {
-  const container = document.getElementById('stats-grid');
-  if (!container || !siteData.stats) return;
-
-  container.innerHTML = siteData.stats
-    .map(
-      (s, idx) => `
-    <div class="stat-item" data-idx="${idx}" data-target="${s.value}" data-suffix="${s.suffix || ''}">
-      <div class="stat-num" id="stat-num-${idx}">0${s.suffix || ''}</div>
-      <div class="stat-label">${s.label}</div>
-    </div>
-  `
-    )
-    .join('');
-
-  statItems = Array.from(container.querySelectorAll('.stat-item'));
-}
-
-function updateStats() {
-  if (getActivePage() !== 'home') return;
-  if (!statItems.length) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  statItems.forEach((item) => {
-    const target = parseFloat(item.getAttribute('data-target')) || 0;
-    const suffix = item.getAttribute('data-suffix') || '';
-    const numEl = item.querySelector('.stat-num');
-    if (!numEl) return;
-
-    if (prefersReducedMotion) {
-      numEl.textContent = `${target}${suffix}`;
-      return;
-    }
-
-    // p = clamp((innerHeight*.95 - rect.top)/(innerHeight*.7), 0, 1)
-    const rect = item.getBoundingClientRect();
-    const p = Math.min(
-      Math.max((window.innerHeight * 0.95 - rect.top) / (window.innerHeight * 0.7), 0),
-      1
-    );
-
-    const currentVal = Math.round(target * p);
-    numEl.textContent = `${currentVal}${suffix}`;
-  });
-}
-
-/**
- * 9.4 "NOW SHOWING" FILMSTRIP
- */
 function initFilmstrip() {
   const container = document.getElementById('filmstrip-wrap');
   if (!container || !siteData.projects) return;
 
-  // First 3 projects
   const topProjects = siteData.projects.slice(0, 3);
 
   container.innerHTML = topProjects
     .map((p, idx) => {
       const frameStr = String(idx + 1).padStart(2, '0');
       return `
-      <div class="filmstrip-card" 
-           style="background: ${p.gradient};" 
-           data-go="work" 
+      <div class="filmstrip-card"
+           style="background: ${p.gradient};"
+           data-go="work"
            data-c="Open"
            role="button"
            tabindex="0"
@@ -280,7 +189,7 @@ function initFilmstrip() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   filmstripCards.forEach((card) => {
-    // 3D tilt & cursor spotlight
+
     if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
       card.addEventListener(
         'pointermove',
@@ -294,7 +203,6 @@ function initFilmstrip() {
           card.style.setProperty('--px', `${x}px`);
           card.style.setProperty('--py', `${y}px`);
 
-          // transform: perspective(700px) rotateY(((x-left)/w-.5)*14deg) rotateX(-((y-top)/h-.5)*14deg)
           const rotY = (x / w - 0.5) * 14;
           const rotX = -(y / h - 0.5) * 14;
           card.style.transform = `perspective(700px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
@@ -309,7 +217,6 @@ function initFilmstrip() {
       });
     }
 
-    // Keyboard navigation (Enter / Space)
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -327,14 +234,6 @@ function onScroll() {
   const delta = currentY - lastScrollY;
   lastScrollY = currentY;
 
-  // Update marquee velocity
   scrollVelocity += delta;
   scrollVelocity = Math.max(-50, Math.min(50, scrollVelocity));
-
-  // Update stats counters
-  updateStats();
-}
-
-function onResize() {
-  updateStats();
 }

@@ -1,12 +1,7 @@
-/**
- * FILM LAB PORTFOLIO — 3D DRUM REEL & PROJECT ACCORDION
- * Section 10 of master specification:
- * 10.1 Drag-to-spin 3D reel (cylindrical presentation, pointer drag, inertia, snapping, depth fade, keyboard arrow controls)
- * 10.2 Project list accordion (amber highlight, one-open-at-a-time, animated grid rows, floating poster preview)
- */
 
 import { siteData, PROJECT_CATEGORIES } from './data.js';
 import { getActivePage, parseRoute } from './router.js';
+import { observeNewContent, refreshScrollReveal } from './reveal.js';
 
 let reelContainer = null;
 let reelDrum = null;
@@ -17,23 +12,20 @@ let floatingPreviewTitle = null;
 let paneElements = [];
 let accordionRows = [];
 
-// Project category filter state
 let activeProjectCategory = 'all';
 let currentCaseStudySlug = null;
 
-// Reel geometry & physics
 const N = (siteData.projects && siteData.projects.length) || 4;
-const STEP = 360 / N; // 90 deg for N=4
-let A = 0; // Current drum rotation in degrees
-let V = 0; // Velocity
-let snapT = null; // Target snap angle
+const STEP = 360 / N;
+let A = 0;
+let V = 0;
+let snapT = null;
 let isDragging = false;
 let startX = 0;
 let lastX = 0;
 let totalMove = 0;
 let animId = null;
 
-// Floating preview tracking
 let mouseX = -1000;
 let mouseY = -1000;
 let previewX = -1000;
@@ -56,13 +48,11 @@ export function initReel() {
   initFloatingPreview();
   startReelLoop();
 
-  // If initial URL is already pointing to a case study, render it immediately
   const initialParsed = parseRoute(window.location.hash);
   if (initialParsed.page === 'work' && initialParsed.slug) {
     renderCaseStudy(initialParsed.slug);
   }
 
-  // Listen to page changes to awaken/sleep loop and sync state
   window.addEventListener('filmlab:pagechange', (e) => {
     if (e.detail && e.detail.page === 'work') {
       if (e.detail.slug) {
@@ -79,18 +69,15 @@ export function initReel() {
   });
 }
 
-/**
- * 10.1 BUILD DRUM PANES
- */
 function buildDrumPanes() {
   if (!reelDrum || !siteData.projects) return;
 
   reelDrum.innerHTML = siteData.projects
     .map((p, i) => {
       const frameStr = String(i + 1).padStart(2, '0');
-      // Pane i transform: rotateY(i*STEP deg) translateZ(calc(var(--w)*.82))
+
       return `
-      <div class="reel-pane" 
+      <div class="reel-pane"
            id="reel-pane-${i}"
            data-idx="${i}"
            style="background: ${p.gradient}; transform: rotateY(${i * STEP}deg) translateZ(calc(var(--w) * 0.82));"
@@ -110,15 +97,11 @@ function buildDrumPanes() {
   paneElements = Array.from(reelDrum.querySelectorAll('.reel-pane'));
 }
 
-/**
- * 10.1 REEL PHYSICS & EVENT HANDLERS
- */
 function initReelInteractions() {
   if (!reelContainer) return;
 
-  // Pointer Down
   reelContainer.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return; // Left click only
+    if (e.button !== 0) return;
     isDragging = true;
     startX = e.clientX;
     lastX = e.clientX;
@@ -131,19 +114,16 @@ function initReelInteractions() {
     } catch (_) {}
   });
 
-  // Pointer Move
   reelContainer.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
     const dx = e.clientX - lastX;
     totalMove += Math.abs(dx);
     lastX = e.clientX;
 
-    // While dragging: A += dx * 0.35, velocity V = dx * 0.35
     A += dx * 0.35;
     V = dx * 0.35;
   });
 
-  // Pointer Up & Cancel
   function onPointerEnd(e) {
     if (!isDragging) return;
     isDragging = false;
@@ -161,10 +141,9 @@ function initReelInteractions() {
   reelContainer.addEventListener('pointerup', onPointerEnd);
   reelContainer.addEventListener('pointercancel', onPointerEnd);
 
-  // Click on Panes: if total movement < 6px
   paneElements.forEach((pane) => {
     pane.addEventListener('click', (e) => {
-      if (totalMove >= 6) return; // Considered a drag, ignore click
+      if (totalMove >= 6) return;
       e.stopPropagation();
 
       const idx = parseInt(pane.getAttribute('data-idx'), 10);
@@ -178,16 +157,15 @@ function initReelInteractions() {
       const activeIdx = getActiveIndex();
 
       if (idx === activeIdx) {
-        // Front pane: open matching accordion row and scroll to it
+
         openProjectAccordion(idx, true);
       } else {
-        // Rotate it to front: snapT = -i*STEP + 360*round((A + i*STEP)/360)
+
         snapT = -idx * STEP + 360 * Math.round((A + idx * STEP) / 360);
       }
     });
   });
 
-  // Keyboard Arrow Controls
   reelContainer.addEventListener('keydown', (e) => {
     if (activeProjectCategory !== 'all') {
       const matchIdx = siteData.projects.findIndex((p) => p.filterCategory === activeProjectCategory);
@@ -218,7 +196,7 @@ function initReelInteractions() {
 }
 
 function getActiveIndex() {
-  // n = ((-round(A/STEP)) % N + N) % N
+
   return ((-Math.round(A / STEP) % N) + N) % N;
 }
 
@@ -245,7 +223,6 @@ function updatePanes() {
     ? siteData.projects.findIndex((p) => p.filterCategory === activeProjectCategory)
     : -1;
 
-  // Depth fade: for each pane rel = ((i*STEP + A) % 360 + 540) % 360 - 180; opacity = .2 + .8*max(0, cos(rel in radians))
   paneElements.forEach((pane, i) => {
     if (activeProjectCategory !== 'all' && i !== matchIdx) {
       pane.style.visibility = 'hidden';
@@ -261,7 +238,7 @@ function updatePanes() {
     const rad = rel * (Math.PI / 180);
     const opacity = 0.2 + 0.8 * Math.max(0, Math.cos(rad));
     pane.style.opacity = opacity.toFixed(3);
-    // Only allow clicking front-facing panes
+
     pane.style.pointerEvents = opacity > 0.65 ? 'auto' : 'none';
   });
 }
@@ -276,7 +253,7 @@ function startReelLoop() {
     const isOverviewVisible = document.getElementById('work-overview')?.style.display !== 'none';
 
     if (isWork && isOverviewVisible) {
-      // Physics calculation
+
       if (!isDragging) {
         if (prefersReducedMotion) {
           if (snapT !== null) {
@@ -285,11 +262,10 @@ function startReelLoop() {
           }
           V = 0;
         } else {
-          // After release: A += V; V *= .93
+
           A += V;
           V *= 0.93;
 
-          // When |V| < .2, snap: target = snapT ?? round(A/STEP)*STEP; A += (target - A)*.12; clear snapT when |target-A| < .05
           if (Math.abs(V) < 0.2) {
             const target = snapT !== null && snapT !== undefined ? snapT : Math.round(A / STEP) * STEP;
             A += (target - A) * 0.12;
@@ -301,7 +277,6 @@ function startReelLoop() {
         }
       }
 
-      // Drum transform each frame: translateZ(calc(var(--w)*-.82)) rotateY(A deg)
       if (reelDrum) {
         reelDrum.style.transform = `translateZ(calc(var(--w) * -0.82)) rotateY(${A}deg)`;
       }
@@ -309,7 +284,6 @@ function startReelLoop() {
       updatePanes();
       updateCaption();
 
-      // Update floating preview position if visible
       if (isHoveringRow && floatingPreview) {
         if (prefersReducedMotion) {
           floatingPreview.style.transform = `translate(${mouseX + 30}px, ${mouseY - 150}px) scale(1)`;
@@ -319,7 +293,6 @@ function startReelLoop() {
           previewVx = (mouseX - previewX) * 0.05;
           const rot = Math.max(-12, Math.min(12, previewVx));
 
-          // Clamp previewX and previewY to keep preview inside viewport
           const clampedX = Math.min(Math.max(previewX + 30, 10), window.innerWidth - 260);
           const clampedY = Math.min(Math.max(previewY - 150, 10), window.innerHeight - 320);
 
@@ -334,9 +307,6 @@ function startReelLoop() {
   animId = requestAnimationFrame(loop);
 }
 
-/**
- * 10.2 PROJECT LIST ACCORDION
- */
 function buildAccordion() {
   const container = document.getElementById('project-accordion');
   if (!container || !siteData.projects) return;
@@ -345,7 +315,7 @@ function buildAccordion() {
   container.innerHTML = siteData.projects
     .map(
       (p, idx) => `
-    <article class="project-card" id="project-card-${idx}" data-idx="${idx}" data-cat="${p.filterCategory}" data-c="Read">
+    <article class="project-card reveal-init reveal-delay-${(idx % 4) + 1}" id="project-card-${idx}" data-idx="${idx}" data-cat="${p.filterCategory}" data-c="Read">
       <div class="project-card-ghost" aria-hidden="true">${String(idx + 1).padStart(2, '0')}</div>
       <div class="project-card-meta">
         <span class="project-card-kicker">SCENE 0${idx + 1}</span>
@@ -385,7 +355,6 @@ function buildAccordion() {
   accordionRows.forEach((card) => {
     const idx = parseInt(card.getAttribute('data-idx'), 10);
 
-    // Floating preview triggers on card hover/focus
     card.addEventListener('pointerenter', () => {
       showFloatingPreview(idx);
     });
@@ -405,7 +374,6 @@ function buildAccordion() {
     });
   });
 
-  // Track global pointer for floating preview positioning
   window.addEventListener(
     'pointermove',
     (e) => {
@@ -422,6 +390,8 @@ function buildAccordion() {
   container.addEventListener('pointerleave', () => {
     hideFloatingPreview();
   });
+
+  observeNewContent(container);
 }
 
 export function openProjectAccordion(idx, shouldScroll = false) {
@@ -441,9 +411,6 @@ function toggleProjectAccordion(idx) {
   openProjectAccordion(idx, true);
 }
 
-/**
- * 10.2 FLOATING POSTER PREVIEW
- */
 function initFloatingPreview() {
   if (!floatingPreview) return;
   floatingPreview.style.opacity = '0';
@@ -481,19 +448,16 @@ function hideFloatingPreview() {
   }
 }
 
-/**
- * 10.3 PROJECT CATEGORY FILTERS (FEATURE B)
- */
 export function renderProjectFilters() {
   const nav = document.getElementById('project-filters-nav');
   if (!nav || !PROJECT_CATEGORIES) return;
 
-  nav.innerHTML = PROJECT_CATEGORIES.map((cat) => {
+  nav.innerHTML = PROJECT_CATEGORIES.map((cat, i) => {
     const isSelected = cat.id === activeProjectCategory;
     return `
-      <button type="button" 
-              class="project-filter-btn ${isSelected ? 'active' : ''}" 
-              data-cat="${cat.id}" 
+      <button type="button"
+              class="project-filter-btn reveal-init reveal-delay-${(i % 5) + 1} ${isSelected ? 'active' : ''}"
+              data-cat="${cat.id}"
               aria-pressed="${isSelected ? 'true' : 'false'}"
               data-c="Filter">
         ${cat.label}
@@ -508,12 +472,13 @@ export function renderProjectFilters() {
       setProjectCategory(catId);
     });
   });
+
+  observeNewContent(nav);
 }
 
 export function setProjectCategory(catId) {
   activeProjectCategory = catId;
 
-  // 1. Update filter button styles and aria-pressed
   const nav = document.getElementById('project-filters-nav');
   if (nav) {
     nav.querySelectorAll('.project-filter-btn').forEach((b) => {
@@ -523,10 +488,8 @@ export function setProjectCategory(catId) {
     });
   }
 
-  // 2. Hide floating preview to prevent stale hover card
   hideFloatingPreview();
 
-  // 3. Filter project cards in accordion
   accordionRows.forEach((card) => {
     const idx = parseInt(card.getAttribute('data-idx'), 10);
     const proj = siteData.projects[idx];
@@ -544,7 +507,8 @@ export function setProjectCategory(catId) {
     }
   });
 
-  // 4. Update drum reel panes & rotate if single project matches
+  refreshScrollReveal();
+
   if (activeProjectCategory === 'all') {
     paneElements.forEach((pane) => {
       pane.style.visibility = 'visible';
@@ -553,7 +517,7 @@ export function setProjectCategory(catId) {
     updatePanes();
     updateCaption();
   } else {
-    // Find matching project index
+
     const matchIdx = siteData.projects.findIndex((p) => p.filterCategory === activeProjectCategory);
     paneElements.forEach((pane, i) => {
       if (i === matchIdx) {
@@ -568,7 +532,7 @@ export function setProjectCategory(catId) {
     });
 
     if (matchIdx !== -1) {
-      // Rotate drum to face the matching pane
+
       snapT = -matchIdx * STEP + 360 * Math.round((A + matchIdx * STEP) / 360);
       const proj = siteData.projects[matchIdx];
       if (reelCaption && proj) {
@@ -578,9 +542,6 @@ export function setProjectCategory(catId) {
   }
 }
 
-/**
- * 10.4 DEDICATED CINEMATIC CASE STUDY RENDERING (FEATURE D)
- */
 export function renderCaseStudy(slug) {
   const container = document.getElementById('case-study-container');
   if (!container || !siteData.projects) return;
@@ -598,27 +559,27 @@ export function renderCaseStudy(slug) {
   container.innerHTML = `
     <article class="case-study-wrap" aria-labelledby="cs-title">
       <!-- HEADER & TOP NAVIGATION -->
-      <div class="case-study-nav-bar">
+      <div class="case-study-nav-bar reveal-init">
         <button type="button" class="btn-pill btn-back-scenes" data-go="work" data-c="Back">
           <span aria-hidden="true">←</span> BACK TO SELECTED SCENES
         </button>
         <span class="kicker">SCENE 0${projIdx + 1} · ARCHITECTURAL DOSSIER</span>
       </div>
 
-      <header class="case-study-hero">
-        <div class="case-study-meta-top">
+      <header class="case-study-hero reveal-init">
+        <div class="case-study-meta-top reveal-init reveal-delay-1">
           <span class="project-card-kicker">SCENE 0${projIdx + 1}</span>
           <span class="case-study-year">${cs.year || project.year}</span>
         </div>
-        <h1 class="case-study-title" id="cs-title">${cs.title}</h1>
-        <p class="case-study-tagline">${cs.tagline}</p>
+        <h1 class="case-study-title reveal-init reveal-delay-2" id="cs-title">${cs.title}</h1>
+        <p class="case-study-tagline reveal-init reveal-delay-3">${cs.tagline}</p>
 
-        <div class="case-study-badge-row">
+        <div class="case-study-badge-row reveal-init reveal-delay-4">
           <span class="tag-pill tag-discipline">${cs.category}</span>
           ${(cs.tags || project.tags).map((t) => `<span class="tag-pill">${t}</span>`).join('')}
         </div>
 
-        <div class="case-study-actions-top">
+        <div class="case-study-actions-top reveal-init reveal-delay-5">
           ${
             cs.codeUrl
               ? `<a href="${cs.codeUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill" data-c="Code">Source code ↗</a>`
@@ -633,28 +594,28 @@ export function renderCaseStudy(slug) {
       </header>
 
       <!-- SECTION B: PROJECT OVERVIEW -->
-      <section class="cs-section" aria-labelledby="sec-overview">
+      <section class="cs-section reveal-init" aria-labelledby="sec-overview">
         <span class="kicker">SYSTEM SYNOPSIS</span>
         <h2 id="sec-overview">Project <em>overview</em></h2>
-        <p class="cs-body-text">${cs.overview}</p>
+        <p class="cs-body-text reveal-init reveal-delay-1">${cs.overview}</p>
       </section>
 
       <!-- SECTION C: PROBLEM STATEMENT -->
-      <section class="cs-section" aria-labelledby="sec-problem">
+      <section class="cs-section reveal-init" aria-labelledby="sec-problem">
         <span class="kicker">OPERATIONAL CONTEXT</span>
         <h2 id="sec-problem">The <em>problem</em></h2>
-        <p class="cs-body-text">${cs.problemStatement}</p>
+        <p class="cs-body-text reveal-init reveal-delay-1">${cs.problemStatement}</p>
       </section>
 
       <!-- SECTION D: GOALS & REQUIREMENTS -->
-      <section class="cs-section" aria-labelledby="sec-goals">
+      <section class="cs-section reveal-init" aria-labelledby="sec-goals">
         <span class="kicker">DESIGN TARGETS</span>
         <h2 id="sec-goals">Goals & <em>requirements</em></h2>
         <div class="goals-grid">
           ${cs.goals
             .map(
               (g, i) => `
-            <div class="goal-card">
+            <div class="goal-card reveal-init reveal-delay-${(i % 4) + 1}">
               <span class="goal-num">0${i + 1}</span>
               <p class="goal-desc">${g}</p>
             </div>
@@ -665,13 +626,13 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION E: SYSTEM ARCHITECTURE -->
-      <section class="cs-section" aria-labelledby="sec-architecture">
+      <section class="cs-section reveal-init" aria-labelledby="sec-architecture">
         <span class="kicker">TOPOLOGY & BLUEPRINT</span>
         <h2 id="sec-architecture">System <em>architecture</em></h2>
-        <p class="cs-body-text">${cs.architecture.summary}</p>
+        <p class="cs-body-text reveal-init reveal-delay-1">${cs.architecture.summary}</p>
 
         <!-- VISUAL DIAGRAM -->
-        <div class="architecture-diagram-container" role="figure" aria-label="Component architecture diagram for ${cs.title}">
+        <div class="architecture-diagram-container reveal-init reveal-delay-2" role="figure" aria-label="Component architecture diagram for ${cs.title}">
           ${diagramHtml}
         </div>
 
@@ -679,8 +640,8 @@ export function renderCaseStudy(slug) {
         <div class="arch-components-grid">
           ${cs.architecture.components
             .map(
-              (comp) => `
-            <div class="arch-component-card">
+              (comp, i) => `
+            <div class="arch-component-card reveal-init reveal-delay-${(i % 3) + 1}">
               <div class="arch-comp-header">
                 <span class="arch-comp-role">${comp.role}</span>
                 <h3 class="arch-comp-name">${comp.name}</h3>
@@ -694,14 +655,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION F: TECHNOLOGY STACK -->
-      <section class="cs-section" aria-labelledby="sec-techstack">
+      <section class="cs-section reveal-init" aria-labelledby="sec-techstack">
         <span class="kicker">STACK SPECIFICATION</span>
         <h2 id="sec-techstack">Technology <em>stack</em></h2>
         <div class="tech-stack-grid">
           ${cs.techStack
             .map(
-              (ts) => `
-            <div class="tech-card">
+              (ts, i) => `
+            <div class="tech-card reveal-init reveal-delay-${(i % 3) + 1}">
               <div class="tech-card-header">
                 <span class="tech-name">${ts.tech}</span>
                 <span class="tech-role">${ts.role}</span>
@@ -715,14 +676,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION G: KEY FEATURES -->
-      <section class="cs-section" aria-labelledby="sec-features">
+      <section class="cs-section reveal-init" aria-labelledby="sec-features">
         <span class="kicker">IMPLEMENTED CAPABILITIES</span>
         <h2 id="sec-features">Key <em>features</em></h2>
         <div class="features-grid">
           ${cs.keyFeatures
             .map(
-              (kf) => `
-            <div class="feature-card">
+              (kf, i) => `
+            <div class="feature-card reveal-init reveal-delay-${(i % 3) + 1}">
               <div class="feature-card-indicator" aria-hidden="true"></div>
               <h3 class="feature-title">${kf.title}</h3>
               <p class="feature-desc">${kf.desc}</p>
@@ -734,14 +695,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION H: IMPLEMENTATION DETAILS -->
-      <section class="cs-section" aria-labelledby="sec-impl">
+      <section class="cs-section reveal-init" aria-labelledby="sec-impl">
         <span class="kicker">ENGINEERING DEEP DIVE</span>
         <h2 id="sec-impl">Implementation <em>details</em></h2>
         <div class="implementation-grid">
           ${cs.implementationDetails
             .map(
-              (imp) => `
-            <div class="impl-card">
+              (imp, i) => `
+            <div class="impl-card reveal-init reveal-delay-${(i % 2) + 1}">
               <h3 class="impl-title">${imp.title}</h3>
               <p class="impl-desc">${imp.desc}</p>
             </div>
@@ -752,14 +713,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION I: DATA FLOW -->
-      <section class="cs-section" aria-labelledby="sec-dataflow">
+      <section class="cs-section reveal-init" aria-labelledby="sec-dataflow">
         <span class="kicker">PIPELINE EXECUTION</span>
         <h2 id="sec-dataflow">Data <em>flow</em></h2>
         <div class="dataflow-track">
           ${cs.dataFlow
             .map(
-              (df) => `
-            <div class="dataflow-step">
+              (df, i) => `
+            <div class="dataflow-step reveal-init reveal-delay-${(i % 4) + 1}">
               <div class="step-badge">${df.step}</div>
               <div class="step-content">
                 <h3 class="step-title">${df.title}</h3>
@@ -773,14 +734,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION J: CHALLENGES & DECISIONS -->
-      <section class="cs-section" aria-labelledby="sec-challenges">
+      <section class="cs-section reveal-init" aria-labelledby="sec-challenges">
         <span class="kicker">TRIALS & RESOLUTIONS</span>
         <h2 id="sec-challenges">Challenges & <em>decisions</em></h2>
         <div class="challenges-grid">
           ${cs.challenges
             .map(
-              (ch) => `
-            <div class="challenge-card">
+              (ch, i) => `
+            <div class="challenge-card reveal-init reveal-delay-${(i % 2) + 1}">
               <div class="challenge-block">
                 <span class="challenge-label">CHALLENGE</span>
                 <p class="challenge-text">${ch.challenge}</p>
@@ -797,17 +758,17 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION K: RESULTS & LIMITATIONS -->
-      <section class="cs-section" aria-labelledby="sec-results">
+      <section class="cs-section reveal-init" aria-labelledby="sec-results">
         <span class="kicker">VERIFICATION & CONSTRAINTS</span>
         <h2 id="sec-results">Results & <em>limitations</em></h2>
         <div class="results-limitations-grid">
-          <div class="results-card">
+          <div class="results-card reveal-init reveal-delay-1">
             <h3 class="rl-title rl-results-title">Verified Achievements</h3>
             <ul class="rl-list">
               ${cs.resultsAndLimitations.results.map((r) => `<li>${r}</li>`).join('')}
             </ul>
           </div>
-          <div class="limitations-card">
+          <div class="limitations-card reveal-init reveal-delay-2">
             <h3 class="rl-title rl-limitations-title">Known Constraints & Scope</h3>
             <ul class="rl-list">
               ${cs.resultsAndLimitations.limitations.map((l) => `<li>${l}</li>`).join('')}
@@ -817,14 +778,14 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION L: FUTURE IMPROVEMENTS -->
-      <section class="cs-section" aria-labelledby="sec-future">
+      <section class="cs-section reveal-init" aria-labelledby="sec-future">
         <span class="kicker">ROADMAP HORIZON</span>
         <h2 id="sec-future">Future <em>improvements</em></h2>
         <div class="future-grid">
           ${cs.futureImprovements
             .map(
               (f, i) => `
-            <div class="future-card">
+            <div class="future-card reveal-init reveal-delay-${(i % 3) + 1}">
               <span class="future-num">0${i + 1}</span>
               <p class="future-text">${f}</p>
             </div>
@@ -835,7 +796,7 @@ export function renderCaseStudy(slug) {
       </section>
 
       <!-- SECTION M: PROJECT FOOTER NAVIGATION -->
-      <footer class="case-study-footer">
+      <footer class="case-study-footer reveal-init">
         <button type="button" class="btn-pill btn-primary-accent" data-go="work" data-c="Back">
           <span aria-hidden="true">←</span> Return to Selected Scenes
         </button>
@@ -855,6 +816,8 @@ export function renderCaseStudy(slug) {
       </footer>
     </article>
   `;
+
+  observeNewContent(container);
 }
 
 function generateArchitectureDiagram(projectId) {
@@ -862,112 +825,112 @@ function generateArchitectureDiagram(projectId) {
     case 'agriscan':
       return `
         <div class="arch-flow-diagram">
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-1">
             <span class="arch-node-badge">STAGE 01 · INPUT</span>
             <h4 class="arch-node-title">Specimen Capture</h4>
             <p class="arch-node-desc">Raw foliage standardized to 224×224 RGB tensor with channel-wise ImageNet normalization.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-2">
             <span class="arch-node-badge">STAGE 02 · BACKBONE</span>
             <h4 class="arch-node-title">MobileNetV2 CNN</h4>
-            <p class="arch-node-desc">Inverted residual bottlenecks extract deep spatial pathology features with sub-20MB footprint.</p>
+            <p class="arch-node-desc">Lightweight convolutional backbone utilizing inverted residual bottlenecks for efficient spatial feature extraction.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-3">
             <span class="arch-node-badge">STAGE 03 · EXPLAINABILITY</span>
             <h4 class="arch-node-title">Grad-CAM Engine</h4>
             <p class="arch-node-desc">Backpropagates class saliency gradients onto final activation maps to render thermal Jet overlays.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 04 · RESOLUTION</span>
-            <h4 class="arch-node-title">Dual Remediation</h4>
-            <p class="arch-node-desc">Relational mapping to organic bio-controls, active chemical interventions, and regional care centers.</p>
+          <div class="arch-node reveal-init reveal-delay-4">
+            <span class="arch-node-badge">STAGE 04 · GUIDANCE</span>
+            <h4 class="arch-node-title">Diagnostic Delivery</h4>
+            <p class="arch-node-desc">Maps predicted classes to informational treatment recommendations and nearby supply store queries.</p>
           </div>
         </div>
       `;
     case 'agentguard':
       return `
         <div class="arch-flow-diagram">
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-1">
             <span class="arch-node-badge">STAGE 01 · INTERCEPTION</span>
-            <h4 class="arch-node-title">Reverse Proxy Gateway</h4>
-            <p class="arch-node-desc">Intercepts raw tool-call payloads emitted by autonomous LLM runtimes before API execution.</p>
+            <h4 class="arch-node-title">Gateway Interception</h4>
+            <p class="arch-node-desc">Intercepts structured agent tool-call requests (demonstrated on Gmail integration) prior to external API dispatch.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-2">
             <span class="arch-node-badge">STAGE 02 · EVALUATION</span>
-            <h4 class="arch-node-title">Deterministic Engine</h4>
-            <p class="arch-node-desc">Redis-cached declarative policy resolution with sub-5ms latency and AST schema verification.</p>
+            <h4 class="arch-node-title">Policy Evaluation</h4>
+            <p class="arch-node-desc">Evaluates action parameters against declarative permission rules, recipient boundaries, and input schemas.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 03 · DEFENSE</span>
-            <h4 class="arch-node-title">Boundary Guard</h4>
-            <p class="arch-node-desc">Regex filtering neutralizes shell metacharacters (&&, |, ;), traversal (../), and SQL truncation.</p>
+          <div class="arch-node reveal-init reveal-delay-3">
+            <span class="arch-node-badge">STAGE 03 · VALIDATION</span>
+            <h4 class="arch-node-title">Parameter Validation</h4>
+            <p class="arch-node-desc">Enforces type contracts, boundary constraints, and regex filters on incoming tool arguments.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 04 · LEDGER & TELEMETRY</span>
-            <h4 class="arch-node-title">Cryptographic Audit</h4>
-            <p class="arch-node-desc">Immutable SHA-256 block hash chaining and real-time WebSocket anomaly broadcasting with kill-switch.</p>
+          <div class="arch-node reveal-init reveal-delay-4">
+            <span class="arch-node-badge">STAGE 04 · EXECUTION & AUDIT</span>
+            <h4 class="arch-node-title">Execution & Audit</h4>
+            <p class="arch-node-desc">Dispatches approved requests to external APIs with idempotency keys and records structured audit logs.</p>
           </div>
         </div>
       `;
     case 'sarkarisetu':
       return `
         <div class="arch-flow-diagram">
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-1">
             <span class="arch-node-badge">STAGE 01 · INTERACTION</span>
             <h4 class="arch-node-title">Citizen React Client</h4>
-            <p class="arch-node-desc">Accessible, multilingual questionnaire wizard with high-contrast UI and touch target calibration.</p>
+            <p class="arch-node-desc">Responsive questionnaire wizard with high-contrast UI and step-by-step mobile navigation.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-2">
             <span class="arch-node-badge">STAGE 02 · GATEWAY</span>
             <h4 class="arch-node-title">Express REST API</h4>
-            <p class="arch-node-desc">Handles sanitized demographic payloads, ministerial query routing, and state aggregation pipelines.</p>
+            <p class="arch-node-desc">Handles demographic payloads, category query routing, and MongoDB scheme filtering.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 03 · DECISION ENGINE</span>
-            <h4 class="arch-node-title">Multi-Factor Evaluator</h4>
-            <p class="arch-node-desc">Evaluates age, gender, occupation, income tier, and state jurisdiction against nested criteria trees.</p>
+          <div class="arch-node reveal-init reveal-delay-3">
+            <span class="arch-node-badge">STAGE 03 · ESTIMATION</span>
+            <h4 class="arch-node-title">Eligibility Estimator</h4>
+            <p class="arch-node-desc">Evaluates demographic parameters (age, gender, income, category, state) against rule thresholds to estimate matches.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 04 · PERSISTENCE & GUIDANCE</span>
-            <h4 class="arch-node-title">Atlas Store & Roadmaps</h4>
-            <p class="arch-node-desc">MongoDB document database delivering tailored checklists and direct application pathways.</p>
+          <div class="arch-node reveal-init reveal-delay-4">
+            <span class="arch-node-badge">STAGE 04 · CATALOG & GUIDES</span>
+            <h4 class="arch-node-title">Curated Catalog</h4>
+            <p class="arch-node-desc">MongoDB document store delivering scheme details, informational checklists, and links to official portals.</p>
           </div>
         </div>
       `;
     case 'supply-chain-analytics':
       return `
         <div class="arch-flow-diagram">
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-1">
             <span class="arch-node-badge">STAGE 01 · INGESTION</span>
-            <h4 class="arch-node-title">Data Wrangling Pipeline</h4>
-            <p class="arch-node-desc">Pandas & NumPy engine handling missing timestamps, corrupt shipping manifests, and coordinate normalization.</p>
+            <h4 class="arch-node-title">Data Cleaning Pipeline</h4>
+            <p class="arch-node-desc">Pandas & NumPy workflow parsing timestamps, handling null values, and validating shipment records.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-2">
             <span class="arch-node-badge">STAGE 02 · TRANSFORMATION</span>
             <h4 class="arch-node-title">Feature Engineering</h4>
-            <p class="arch-node-desc">Calculates scheduled transit margins, categorical origin-destination corridor encodings, and density ratios.</p>
+            <p class="arch-node-desc">Derives scheduled transit days, customer segment indicators, and categorical corridor encodings.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
+          <div class="arch-node reveal-init reveal-delay-3">
             <span class="arch-node-badge">STAGE 03 · CLASSIFICATION</span>
-            <h4 class="arch-node-title">Scikit-Learn Classifier</h4>
-            <p class="arch-node-desc">Supervised decision pipelines predicting late delivery risk with Recall and ROC-AUC metric optimization.</p>
+            <h4 class="arch-node-title">Scikit-Learn Modeling</h4>
+            <p class="arch-node-desc">Supervised classification pipelines evaluating shipment delay propensity using pre-dispatch attributes.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
-          <div class="arch-node">
-            <span class="arch-node-badge">STAGE 04 · INTELLIGENCE UI</span>
-            <h4 class="arch-node-title">Streamlit Operations Hub</h4>
-            <p class="arch-node-desc">Interactive reactive dashboard featuring corridor drilldowns, risk correlation matrices, and order simulation.</p>
+          <div class="arch-node reveal-init reveal-delay-4">
+            <span class="arch-node-badge">STAGE 04 · DASHBOARD</span>
+            <h4 class="arch-node-title">Streamlit Dashboard</h4>
+            <p class="arch-node-desc">Interactive web dashboard providing corridor exploration, distribution charts, and scenario simulation on historical data.</p>
           </div>
         </div>
       `;

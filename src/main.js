@@ -1,7 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — MAIN ENTRY POINT
- * Orchestrates module initialization and renders data-driven content.
- */
 
 import { siteData } from './data.js';
 import { initMode } from './mode.js';
@@ -15,17 +11,11 @@ import { initScroll } from './scroll.js';
 import { initHome } from './home.js';
 import { initAbout } from './about.js';
 import { initJourney } from './journey.js';
+import { initScrollReveal } from './reveal.js';
+import { initCinematicEffects } from './cinematic-effects.js';
 
 function renderContent() {
-  // Home page components (Hero, Marquee, Stats, Filmstrip) are initialized in initHome()
 
-  // Work page components (3D Drum Reel & Accordion) are built and initialized in initReel()
-
-  // About page components (Portrait, Contact Sheet, Kit, Bars, Certified Prints, Awards) are initialized in initAbout()
-
-  // Journey page components (Timeline, Rail, Lit nodes, Résumé block) are initialized in initJourney()
-
-  // 11. Connect & Footer Elements
   const footerEmail = document.getElementById('footer-email');
   if (footerEmail && siteData.site.email) {
     footerEmail.href = 'mailto:' + siteData.site.email;
@@ -50,5 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHome();
   initAbout();
   initJourney();
+  initScrollReveal();
+  initCinematicEffects();
   console.log('Film Lab Portfolio initialized successfully.');
 });

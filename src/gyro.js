@@ -1,7 +1,3 @@
-/**
- * FILM LAB PORTFOLIO — 3D PERSISTENT GYROSCOPE
- * Section 7 of master specification.
- */
 
 import { getActivePage } from './router.js';
 import { isNoirMode } from './mode.js';
@@ -19,13 +15,11 @@ let mouseX = 0;
 let mouseY = 0;
 let hasMouseMoved = false;
 
-// Page glide coordinates (fractions of viewport)
 let targetCx = 0.72;
 let targetCy = 0.50;
 let curCx = 0.72;
 let curCy = 0.50;
 
-// Geometry: 3 rings, 72 segments each (73 points to close)
 const SEGMENTS = 72;
 let ringBasePoints = [];
 
@@ -81,13 +75,11 @@ export function initGyro() {
     { passive: true }
   );
 
-  // Set initial page target
   const initialPage = getActivePage() || 'home';
   setGyroPage(initialPage);
   curCx = targetCx;
   curCy = targetCy;
 
-  // Listen to router page changes
   window.addEventListener('filmlab:pagechange', (e) => {
     if (e.detail?.page) {
       setGyroPage(e.detail.page);
@@ -123,9 +115,8 @@ function drawFrame(t) {
   if (!canvas || !ctx) return;
   const w = canvas.width;
   const h = canvas.height;
-  if (!w || !h) return; // Zero-size guard
+  if (!w || !h) return;
 
-  // Interpolate centre position per page at 0.04/frame
   curCx += (targetCx - curCx) * 0.04;
   curCy += (targetCy - curCy) * 0.04;
 
@@ -138,7 +129,6 @@ function drawFrame(t) {
   const normMouseX = mouseX / w - 0.5;
   const normMouseY = mouseY / h - 0.5;
 
-  // Global rotation each frame
   const a = t * 0.00018 + scrollY * 0.0016 + normMouseY * 0.8;
   const b = t * 0.00027 + scrollY * 0.0011 + normMouseX * 0.8;
 
@@ -150,7 +140,6 @@ function drawFrame(t) {
     const ringPoints = ringBasePoints[k];
     const projected = [];
 
-    // Project 3D points
     for (let i = 0; i <= SEGMENTS; i++) {
       const pRot = rot(ringPoints[i], a, b);
       const [rx, ry, rz] = pRot;
@@ -160,7 +149,6 @@ function drawFrame(t) {
       projected.push({ sx, sy, rz });
     }
 
-    // Colours
     let ringStroke, nodeBaseColor;
     if (!isNoir) {
       if (k === 0) {
@@ -180,7 +168,6 @@ function drawFrame(t) {
       }
     }
 
-    // Draw 1px polyline
     ctx.strokeStyle = ringStroke;
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -190,7 +177,6 @@ function drawFrame(t) {
     }
     ctx.stroke();
 
-    // Draw nodes every 9th point
     for (let i = 0; i < SEGMENTS; i += 9) {
       const pt = projected[i];
       const nodeRadius = Math.max(0.5, 2.4 + pt.rz * 1.2);
