@@ -139,7 +139,7 @@ export function setupFooterResumeLink() {
 
   if (!resumeLink) return;
 
-  const resumeUrl = siteData.resume?.file || './assets/resume/resume.pdf';
+  const resumeUrl = siteData.resume?.file || '/assets/resume/Aditya_Prakash_Resume.pdf';
   resumeLink.href = resumeUrl;
   resumeLink.target = '_blank';
   resumeLink.rel = 'noopener noreferrer';

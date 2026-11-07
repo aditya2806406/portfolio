@@ -162,7 +162,7 @@ function initRackFocusAndHeadingReveal(prefersReducedMotion) {
     if (prefersReducedMotion) return;
 
     const candidates = activePageEl.querySelectorAll(
-      '.cs-section h2, .case-study-hero h1, .about-grid h2, .kit-section h2, .proficiency-section h2, .awards-section h2, .timeline-header h2, .now-showing-section h2, .project-card, .filmstrip-card, .timeline-entry, .cert-card, .award-row, .goal-card, .arch-component-card, .tech-card, .feature-card, .impl-card, .challenge-card, .results-card, .limitations-card, .future-card'
+      '.cs-section h2, .case-study-hero h1, .about-grid h2, .kit-section h2, .awards-section h2, .timeline-header h2, .now-showing-section h2, .project-card, .filmstrip-card, .timeline-entry, .cert-card, .award-row, .goal-card, .arch-component-card, .tech-card, .feature-card, .impl-card, .challenge-card, .results-card, .limitations-card, .future-card'
     );
 
     candidates.forEach((el) => {

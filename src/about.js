@@ -35,7 +35,6 @@ export function initAbout() {
   window.addEventListener('filmlab:pagechange', (e) => {
     if (e.detail?.page === 'about') {
       triggerPortraitReveal();
-      animateProficiencyBars();
     }
   });
 
@@ -44,7 +43,6 @@ export function initAbout() {
   const pageAbout = document.getElementById('page-about');
   if (pageAbout && pageAbout.classList.contains('on')) {
     triggerPortraitReveal();
-    animateProficiencyBars();
   }
 
   setupCertLightbox();
@@ -55,7 +53,6 @@ export function renderAbout() {
   renderPortrait();
   renderSkillFilters();
   renderKit();
-  renderProficiencyBars();
   renderCertificates();
   renderBeyondBuild();
 }
@@ -295,51 +292,6 @@ function renderKit() {
       </div>
     `;
   }
-}
-
-function renderProficiencyBars() {
-  const barsContainer = document.getElementById('proficiency-bars');
-  if (!barsContainer || !siteData.about.bars) return;
-
-  barsContainer.innerHTML = siteData.about.bars.map(b => `
-    <div class="bar-row">
-      <span class="bar-label">${b.label}</span>
-      <div class="bar-track">
-        <div class="bar-fill" data-value="${b.value}" style="width: 0%;"></div>
-      </div>
-      <span class="bar-val">${b.value}%</span>
-    </div>
-  `).join('');
-}
-
-export function animateProficiencyBars() {
-  const fills = document.querySelectorAll('#proficiency-bars .bar-fill');
-  if (!fills.length) return;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  fills.forEach(fill => {
-    const targetVal = fill.getAttribute('data-value') || '0';
-    if (prefersReducedMotion) {
-      fill.style.width = targetVal + '%';
-      return;
-    }
-
-    fill.style.width = '0%';
-    requestAnimationFrame(() => {
-      fill.animate(
-        [
-          { width: '0%' },
-          { width: `${targetVal}%` }
-        ],
-        {
-          duration: 1600,
-          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-          fill: 'forwards'
-        }
-      );
-    });
-  });
 }
 
 function renderCertificates() {

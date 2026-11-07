@@ -465,12 +465,41 @@ body.noir .flashlight-bright em {
   }
 }
 
+.marquee-header-wrap {
+  margin-top: 5vh;
+  margin-bottom: 2.5vh;
+}
+
+.marquee-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.marquee-header h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(28px, 4.5vw, 48px);
+  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.marquee-header h2 em {
+  font-style: italic;
+  color: var(--amber);
+}
+
 .marquee-strip {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: 22px 0;
+  height: 82px;
+  padding: 0;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   white-space: nowrap;
   background-color: rgba(6, 24, 27, 0.4);
@@ -485,14 +514,35 @@ body.noir .marquee-strip {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 300;
-  font-size: clamp(30px, 5vw, 64px);
+  font-size: 33px;
+  line-height: 1.2;
   letter-spacing: 0.02em;
   will-change: transform;
 }
 
 .marquee-content span.star {
   color: var(--amber);
-  margin: 0 1.5vw;
+  margin: 0 1.4vw;
+  font-size: 0.85em;
+  vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+  .marquee-strip {
+    height: 78px;
+  }
+  .marquee-content {
+    font-size: 27px;
+  }
+}
+
+@media (max-width: 600px) {
+  .marquee-strip {
+    height: 72px;
+  }
+  .marquee-content {
+    font-size: 20px;
+  }
 }
 
 .filmstrip-wrap {
@@ -2093,53 +2143,8 @@ body.noir .skill-filter-btn.active {
   margin-top: 1vh;
 }
 
-.proficiency-section {
-  margin-top: 12vh;
-  max-width: 760px;
-}
-
-.bar-row {
-  display: grid;
-  grid-template-columns: 180px 1fr 44px;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 22px;
-}
-
-@media (max-width: 600px) {
-  .bar-row {
-    grid-template-columns: 130px 1fr 40px;
-    gap: 12px;
-  }
-}
-
-.bar-label {
-  font-size: 13px;
-  color: var(--mute);
-}
-
-.bar-val {
-  font-size: 13px;
-  color: var(--mute);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.bar-track {
-  height: 2px;
-  background-color: var(--line);
-  position: relative;
-}
-
-.bar-fill {
-  height: 4px;
-  background-color: var(--amber);
-  box-shadow: 0 0 14px var(--amber);
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 0;
-  will-change: width;
+.certificates-section {
+  margin-top: 10vh;
 }
 
 .certificates-grid {

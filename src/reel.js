@@ -855,26 +855,26 @@ function generateArchitectureDiagram(projectId) {
         <div class="arch-flow-diagram">
           <div class="arch-node reveal-init reveal-delay-1">
             <span class="arch-node-badge">STAGE 01 · INTERCEPTION</span>
-            <h4 class="arch-node-title">Gateway Interception</h4>
-            <p class="arch-node-desc">Intercepts structured agent tool-call requests (demonstrated on Gmail integration) prior to external API dispatch.</p>
+            <h4 class="arch-node-title">Action Interception</h4>
+            <p class="arch-node-desc">Intercepts in-flight agent actions, normalizes request structures, and binds identity context before external dispatch.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
           <div class="arch-node reveal-init reveal-delay-2">
             <span class="arch-node-badge">STAGE 02 · EVALUATION</span>
-            <h4 class="arch-node-title">Policy Evaluation</h4>
-            <p class="arch-node-desc">Evaluates action parameters against declarative permission rules, recipient boundaries, and input schemas.</p>
+            <h4 class="arch-node-title">Policy & Risk Evaluation</h4>
+            <p class="arch-node-desc">Evaluates declarative rules and AI risk scores to synthesize deterministic security verdicts: ALLOW, BLOCK, or REVIEW.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
           <div class="arch-node reveal-init reveal-delay-3">
-            <span class="arch-node-badge">STAGE 03 · VALIDATION</span>
-            <h4 class="arch-node-title">Parameter Validation</h4>
-            <p class="arch-node-desc">Enforces type contracts, boundary constraints, and regex filters on incoming tool arguments.</p>
+            <span class="arch-node-badge">STAGE 03 · DISPATCH</span>
+            <h4 class="arch-node-title">Controlled Execution</h4>
+            <p class="arch-node-desc">Dispatches approved operations through sandboxed API connectors and multi-database adapters with signed intent contracts.</p>
           </div>
           <div class="arch-connector" aria-hidden="true">→</div>
           <div class="arch-node reveal-init reveal-delay-4">
-            <span class="arch-node-badge">STAGE 04 · EXECUTION & AUDIT</span>
-            <h4 class="arch-node-title">Execution & Audit</h4>
-            <p class="arch-node-desc">Dispatches approved requests to external APIs with idempotency keys and records structured audit logs.</p>
+            <span class="arch-node-badge">STAGE 04 · VERIFICATION & AUDIT</span>
+            <h4 class="arch-node-title">Outcome Verification & Audit</h4>
+            <p class="arch-node-desc">Reconciles provider receipts against expected outcomes independently of authorization, committing structured records to PostgreSQL.</p>
           </div>
         </div>
       `;
