@@ -466,7 +466,7 @@ export const siteData = {
       gradient: 'linear-gradient(135deg, #10212e 0%, #19374d 60%, #3884b0 100%)',
       tags: ['React', 'Node.js', 'Express', 'MongoDB Atlas', 'REST APIs'],
       description:
-        'Civic technology prototype developed for the Smart India Hackathon to simplify welfare scheme discovery across Indian central and state initiatives, featuring demographic eligibility estimation and documentation roadmaps.',
+        'A civic technology platform that simplifies the discovery of Indian government welfare schemes through demographic-based eligibility estimation and documentation guidance.',
       demoUrl: '#',
       codeUrl: 'https://github.com/aditya2806406',
       caseStudy: {
@@ -479,7 +479,7 @@ export const siteData = {
         codeUrl: 'https://github.com/aditya2806406',
         demoUrl: '#',
         overview:
-          'SarkariSetu is an accessible civic technology prototype developed for the Smart India Hackathon (SIH) to help citizens discover relevant Indian government welfare initiatives. Featuring a guided demographic questionnaire, the platform evaluates user attributes (such as age, gender, occupation, income tier, and state) against a curated database of central and state schemes to estimate potential eligibility and provide informational documentation roadmaps.',
+          'SarkariSetu is a civic technology platform designed to help citizens discover relevant Indian central and state government welfare schemes. Through a guided demographic questionnaire, the platform evaluates user-provided attributes such as age, gender, occupation, income tier, and state against a curated database of schemes to estimate potential eligibility and provide informational documentation roadmaps.',
         problemStatement:
           'Government welfare and subsidy programs span agriculture, education, healthcare, and small enterprise support, yet information is frequently fragmented across diverse ministerial portals filled with dense bureaucratic terminology. As a result, eligible citizens often remain unaware of available assistance or struggle to identify required documentation. SarkariSetu addresses this discovery gap with an intuitive, centralized exploration tool.',
         goals: [
@@ -587,13 +587,13 @@ export const siteData = {
             decision: 'Government departments describe requirements using different terminology and formats. Designed a normalized criteria schema to represent common conditions (age, income, residency, social category) consistently for algorithmic matching.',
           },
           {
-            challenge: 'Hackathon Prototyping Constraints',
-            decision: 'Prioritized core eligibility matching and responsive form usability under hackathon development timelines, focusing on an intuitive user flow rather than incomplete complex features.',
+            challenge: 'Prototyping Scope & Focus',
+            decision: 'Prioritized core eligibility matching and responsive form usability, focusing on an intuitive user flow rather than incomplete complex features.',
           },
         ],
         resultsAndLimitations: {
           results: [
-            'Developed a functional scheme discovery platform prototype created for the Smart India Hackathon.',
+            'Developed a functional scheme discovery platform prototype with guided eligibility evaluation.',
             'Implemented demographic filtering evaluating age, income, category, and jurisdiction criteria.',
             'Curated initial seed database of central and state welfare initiatives across key welfare sectors.',
             'Structured informational checklists of required documentation alongside links to official portals.',
